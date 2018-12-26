@@ -14,8 +14,8 @@ public class MenuScreen extends GameScreen {
     @Override
     public void render(final Graphics2D g) {
         super.render(g);
-        g.setFont(new Font("Segoe UI", Font.BOLD, 32));
+        g.setFont(GameOfLife.baseFont);
         g.setColor(Color.RED);
-        Game.getRenderEngine().renderText(g, "Conway's Game Of Life", 100, 100);
+        Game.getRenderEngine().renderText(g, "Conway's Game Of Life", 50, 50);
     }
 }
