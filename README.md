@@ -5,4 +5,4 @@
 ![example][example_image]
 
 [wikipedia_gol]: https://en.wikipedia.org/wiki/Conway%27s
-[logo]: https://github.com/adam-p/markdown-here/raw/master/example_output.png "Example"
+[example_image]: https://github.com/adam-p/markdown-here/raw/master/example_output.png "Example"
