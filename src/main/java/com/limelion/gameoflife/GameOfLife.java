@@ -1,103 +1,142 @@
+/*
+ * Copyright (c) 2018 Gui-Yôm
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 package com.limelion.gameoflife;
 
+import com.limelion.gameoflife.output.EncodingInfo;
+import com.limelion.gameoflife.output.OutputAdaptater;
+import com.limelion.gameoflife.output.OutputType;
 import com.limelion.gameoflife.rules.ConwayRule;
 import com.limelion.gameoflife.rules.Rule;
 import com.madgag.gif.fmsware.AnimatedGifEncoder;
 import com.vg.apng.APNG;
 import com.vg.apng.Gray;
 
-import java.awt.*;
-import java.awt.color.ColorSpace;
-import java.awt.image.*;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.concurrent.TimeUnit;
 
+/**
+ * The main class.
+ */
 public class GameOfLife {
-
-    public static Font baseFont = new Font("Segoe UI", Font.PLAIN, 16);
 
     private Board board;
     private Rule rule;
+    private Statistics stats;
 
     public GameOfLife() {
-        board = new Board(50);
-        rule = new ConwayRule();
+        this(100, new ConwayRule());
+    }
+
+    public GameOfLife(int square, Rule rule) {
+        this.board = new Board(square);
+        this.rule = rule;
+        this.stats = new Statistics(board);
+    }
+
+    public GameOfLife(int width, int height, Rule rule) {
+        this.board = new Board(width, height);
+        this.rule = rule;
+        this.stats = new Statistics(board);
     }
 
     public static void main(String[] args) throws IOException {
         //HERE WE GO !
-        long initDuration = System.currentTimeMillis();
-
         GameOfLife gol = new GameOfLife();
-
-        System.out.printf("Init duration : %d ms %n", System.currentTimeMillis() - initDuration);
 
         gol.getBoard().drawLine(20, 20, 20, 26);
 
-        //ImageIO.write(gol.getImage(), "png", Utils.cleanCreate("initial.png"));
+        OutputAdaptater out = OutputType.APNG.getImpl().init(Utils.cleanCreate("output/output.png"),
+                                                             new EncodingInfo()
+                                                               .setHeight(gol.getBoard().getHeight())
+                                                               .setWidth(gol.getBoard().getWidth())
+                                                               .setDelay(500, TimeUnit.MILLISECONDS)
+                                                               .setNumRepeats(0));
 
-        gol.createGIF(50, "output.gif");
-        gol.createhtmlplayer("player.html", "output.gif");
+        gol.recordSteps(out, 20, true);
 
-        System.out.printf("Total computation time : %d ms %n", System.currentTimeMillis() - initDuration);
+        out.finish();
 
+        gol.createhtmlplayer("output/player.html", "output.png");
+
+        System.out.println(gol.getStats());
     }
 
     public Board getBoard() {
         return board;
     }
 
+    public Statistics getStats() {
+        return stats;
+    }
+
+    /**
+     * Run a new step. A step is a new computation round over the board with the given rule.
+     */
     public void nextStep() {
+
+        // Here we MUST make a copy of the array.
         boolean[][] newBoard = getBoard().copyShape();
+
         for (int i = 0; i < getBoard().getWidth(); i++)
             for (int j = 0; j < getBoard().getHeight(); j++) {
                 newBoard[i][j] = rule.apply(getBoard().getCell(i, j), board.countNeighbours(i, j));
             }
         board = new Board(newBoard);
+        stats.incSteps();
     }
 
-    public void nextStep(int steps) {
-        for (int i = 0; i < steps; i++)
+    /**
+     * Run {@code n} steps.
+     * @param n the number of steps to run
+     */
+    public void nextStep(int n) {
+        for (int i = 0; i < n; i++)
             nextStep();
     }
 
-    public void nextStep(int steps, OutputAdaptater recorder) {
-
+    /**
+     * Record the current state.
+     * @param oa the output adaptater to use to record
+     * @throws IOException
+     */
+    public void recordCurrentState(OutputAdaptater oa) throws IOException {
+        oa.feed(Utils.bool_to_gray(Utils.align(getBoard().getCells())));
     }
 
-    public BufferedImage getImage() {
-        byte[] buffer = Utils.bool_to_gray(Utils.align(getBoard().getCells()));
-        ColorModel cm = new ComponentColorModel(ColorSpace.getInstance(ColorSpace.CS_GRAY),
-                                                new int[] {8},
-                                                false,
-                                                true,
-                                                Transparency.OPAQUE,
-                                                DataBuffer.TYPE_BYTE);
-        return new BufferedImage(cm,
-                                 Raster.createWritableRaster(
-                                   cm.createCompatibleSampleModel(getBoard().getWidth(), getBoard().getHeight()),
-                                   new DataBufferByte(buffer, buffer.length),
-                                   null),
-                                 false,
-                                 null);
+    /**
+     * Record the state after the next state.
+     * @param oa the output adaptater to use to record
+     * @throws IOException
+     */
+    public void recordNextState(OutputAdaptater oa) throws IOException {
+        nextStep();
+        recordCurrentState(oa);
     }
 
-    public void createAPNG(int steps, String path) throws IOException {
-
-        if (steps <= 0) {
-            throw new IllegalArgumentException("The number of steps to record must be strictly positive !");
+    /**
+     * Record {@code n} steps, including the current or not.
+     * @param oa the output adaptater to use to record
+     * @param n the number of steps to record
+     * @param doRecordCurrent whether to record the current step
+     * @throws IOException
+     */
+    public void recordSteps(OutputAdaptater oa, int n, boolean doRecordCurrent) throws IOException {
+        if (oa.getType().isAnimated()) {
+            if (doRecordCurrent)
+                recordCurrentState(oa);
+            for (int i = 0; i < n; i++)
+                recordNextState(oa);
         }
-
-        Gray[] pngs = new Gray[steps];
-
-        for (int i = 0; i < steps; i++) {
-            pngs[i] = new Gray(getBoard().getWidth(),
-                               getBoard().getHeight(),
-                               Utils.bool_to_gray(Utils.align(getBoard().getCells())));
-            nextStep();
-        }
-
-        APNG.write(pngs, Utils.cleanCreate(path));
     }
 
     public void createGIF(int steps, String path) throws IOException {
@@ -108,7 +147,9 @@ public class GameOfLife {
         agife.start(path);
 
         for (int i = 0; i < steps; i++) {
-            agife.addFrame(getImage());
+            agife.addFrame(Utils.createGrayImage(Utils.bool_to_gray(Utils.align(getBoard().getCells())),
+                                                 getBoard().getWidth(),
+                                                 getBoard().getHeight()));
             nextStep();
         }
 
@@ -117,7 +158,7 @@ public class GameOfLife {
 
     public void createhtmlplayer(String path, String animationPath) throws IOException {
         PrintWriter pw = new PrintWriter(Utils.cleanCreate(path));
-        pw.printf("<!DOCTYPE html>%n<html>%n  <head>%n    <title>%s</title>%n  </head>%n  <body>%n    <img src=\"%s\">%n  </body>%n</html>%n", animationPath, animationPath);
+        pw.printf("<!DOCTYPE html>%n<html>%n  <head>%n    <title>%s</title>%n  </head>%n  <body>%n    <img src=\"%s\" style=\"border:3px solid black\">%n  </body>%n</html>%n", animationPath, animationPath);
         pw.close();
     }
 }

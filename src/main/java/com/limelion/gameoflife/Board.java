@@ -2,7 +2,7 @@ package com.limelion.gameoflife;
 
 /**
  * The board where magic happens.   <br>
- * +--------------------------> x   <br>
+ * +--------------------------&gt; x   <br>
  * |                                <br>
  * |                                <br>
  * | XXXXX                          <br>
@@ -41,7 +41,7 @@ public class Board {
      * @param height
      * @param width
      */
-    public Board(int height, int width) {
+    public Board(int width, int height) {
         this(new boolean[width][height]);
     }
 
@@ -151,5 +151,13 @@ public class Board {
                 }
             }
         } else throw new IllegalArgumentException("Specified line is not straight !");
+    }
+
+    public void forEachCell(Arity3VoidFunc<Boolean, Integer, Integer> action) {
+        for (int i = 0; i < getWidth(); i++) {
+            for (int j = 0; j < getHeight(); j++) {
+                action.action(getCell(i, j), i, j);
+            }
+        }
     }
 }
