@@ -51,6 +51,8 @@ public enum OutputType {
                 return new OutputBMP();
             case APNG:
                 return new OutputAPNG();
+            case GIF:
+                return new OutputGIF();
             default:
                 return null;
         }

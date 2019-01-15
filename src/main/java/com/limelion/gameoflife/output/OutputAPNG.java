@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Gui-Yôm
+ * Copyright (c) 2019 Gui-Yôm
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
  *
@@ -13,7 +13,6 @@ package com.limelion.gameoflife.output;
 import com.vg.apng.APNG;
 import com.vg.apng.Gray;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -22,24 +21,31 @@ public class OutputAPNG extends OutputAdaptater {
     private ArrayList<Gray> grays;
 
     public OutputAPNG() {
+
         super();
         grays = new ArrayList<>();
     }
 
     @Override
     public OutputAdaptater feed(byte[] data) {
-        grays.add(new Gray(getEncodingInfo().getWidth(), getEncodingInfo().getHeight(), data, ei.getDelay()));
+
+        if (isInited())
+            grays.add(new Gray(getEncodingInfo().getWidth(), getEncodingInfo().getHeight(), data, ei.getDelay()));
+        else
+            throw new IllegalStateException("Please init the OutputAdaptater first !");
         return this;
     }
 
     @Override
     public void finish() throws IOException {
-        APNG.write(grays.toArray(new Gray[0]), (FileOutputStream) getOutput(), ei.getNumRepeats());
+
+        APNG.write(grays.toArray(new Gray[0]), getOutput(), ei.getNumRepeats());
         super.finish();
     }
 
     @Override
     public OutputType getType() {
+
         return OutputType.APNG;
     }
 }

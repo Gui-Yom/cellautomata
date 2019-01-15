@@ -14,23 +14,28 @@ public class Statistics {
 
     private int elapsedSteps = 0;
     private Board board;
-    private long startTime;
+    private long elapsedTime = 0;
+
+    private long startTime = 0;
 
     public Statistics(Board b) {
-        this.startTime = System.currentTimeMillis();
+
         this.board = b;
     }
 
     public int getElapsedSteps() {
+
         return elapsedSteps;
     }
 
     public long getTotalCells() {
+
         return board.getSurface();
     }
 
     public long getAliveCells() {
-        long[] aliveCount = {0};
+
+        long[] aliveCount = { 0 };
         board.forEachCell((value, x, y) -> {
             if (value)
                 aliveCount[0]++;
@@ -38,16 +43,29 @@ public class Statistics {
         return aliveCount[0];
     }
 
-    public long getStartTime() {
-        return startTime;
+    public long getElapsedTime() {
+
+        return elapsedTime;
+    }
+
+    void startRecordTime() {
+
+        startTime = System.currentTimeMillis();
+    }
+
+    void stopRecordTime() {
+
+        elapsedTime += System.currentTimeMillis() - startTime;
     }
 
     @Override
     public String toString() {
-        return String.format("Elapsed time : %d ms. Ran %d steps on %d cells. Currently alive cells : %d.", System.currentTimeMillis() - startTime, elapsedSteps, getTotalCells(), getAliveCells());
+
+        return String.format("Elapsed time : %d ms. Ran %d steps on %d cells. Currently alive cells : %d.", elapsedTime, elapsedSteps, getTotalCells(), getAliveCells());
     }
 
     public void incSteps() {
+
         elapsedSteps++;
     }
 }

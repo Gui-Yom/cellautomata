@@ -20,26 +20,31 @@ public abstract class OutputAdaptater {
     protected boolean finished = false;
 
     public OutputAdaptater(OutputStream output, EncodingInfo ei) {
+
         init(output, ei);
     }
 
     public OutputAdaptater(File output, EncodingInfo ei) throws FileNotFoundException {
+
         this(new FileOutputStream(output), ei);
     }
 
-    public OutputAdaptater() {
+    OutputAdaptater() {
 
     }
 
     public boolean isInited() {
+
         return inited;
     }
 
     public boolean isFinished() {
+
         return finished;
     }
 
     public OutputAdaptater init(OutputStream output, EncodingInfo ei) {
+
         this.output = output;
         this.ei = ei;
         this.inited = true;
@@ -47,21 +52,25 @@ public abstract class OutputAdaptater {
     }
 
     public OutputAdaptater init(File output, EncodingInfo ei) throws FileNotFoundException {
+
         return init(new FileOutputStream(output), ei);
     }
 
     public abstract OutputAdaptater feed(byte[] data) throws IOException;
 
     public void finish() throws IOException {
+
         output.close();
         this.finished = true;
     }
 
     public OutputStream getOutput() {
+
         return output;
     }
 
     public EncodingInfo getEncodingInfo() {
+
         return ei;
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Gui-Yôm
+ * Copyright (c) 2019 Gui-Yôm
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
  *
@@ -17,21 +17,19 @@ import java.io.IOException;
 
 public class OutputPNG extends OutputAdaptater {
 
-    public OutputPNG() {
-        super();
-    }
-
     @Override
     public OutputAdaptater feed(byte[] data) throws IOException {
+
         if (isInited())
             ImageIO.write(Utils.createGrayImage(data, ei.getWidth(), ei.getHeight()), "png", output);
         else
-            throw new IllegalStateException("Init the OutputAdapter first !");
+            throw new IllegalStateException("Please init the OutputAdaptater first !");
         return this;
     }
 
     @Override
     public OutputType getType() {
+
         return OutputType.PNG;
     }
 }

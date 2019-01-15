@@ -6,7 +6,7 @@
 
     <groupId>com.limelion</groupId>
     <artifactId>gameoflife</artifactId>
-    <version>0.2.0-SNAPSHOT</version>
+    <version>0.3.0</version>
 
     <name>game-of-life</name>
     <url>https://limeilon.github.io/game-of-life/</url>
@@ -42,7 +42,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <exec.mainClass>com.limelion.gameoflife.GameOfLife</exec.mainClass>
     </properties>
 
     <dependencies>
@@ -55,6 +54,12 @@
             <groupId>com.vg</groupId>
             <artifactId>apng</artifactId>
             <version>0.2.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -78,6 +83,7 @@
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.1.1</version>
+                <!--
                 <configuration>
                     <archive>
                         <manifest>
@@ -85,10 +91,15 @@
                         </manifest>
                     </archive>
                 </configuration>
+                -->
             </plugin>
             <plugin>
                 <artifactId>maven-deploy-plugin</artifactId>
                 <version>2.8.2</version>
+            </plugin>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.0.0-M3</version>
             </plugin>
             <plugin>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
@@ -120,6 +131,7 @@
                     </execution>
                 </executions>
             </plugin>
+            <!--
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
@@ -144,6 +156,7 @@
                     <includeProjectDependencies>true</includeProjectDependencies>
                 </configuration>
             </plugin>
+            -->
         </plugins>
     </build>
 </project>
