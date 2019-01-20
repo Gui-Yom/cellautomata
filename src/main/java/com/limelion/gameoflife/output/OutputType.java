@@ -17,7 +17,8 @@ public enum OutputType {
     PNG,
     BMP,
     APNG,
-    GIF;
+    GIF,
+    GLD;
 
     public String getFileExtension() {
         return "." + this.name().toLowerCase();
@@ -35,6 +36,7 @@ public enum OutputType {
 
             case PNG:
             case BMP:
+            case GLD:
             default:
                 return false;
         }
@@ -53,6 +55,8 @@ public enum OutputType {
                 return new OutputAPNG();
             case GIF:
                 return new OutputGIF();
+            case GLD:
+                return new OutputGLD();
             default:
                 return null;
         }

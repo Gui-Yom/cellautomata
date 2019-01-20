@@ -10,6 +10,7 @@
 
 package com.limelion.gameoflife;
 
+import com.limelion.gameoflife.input.InputAdaptater;
 import com.limelion.gameoflife.output.OutputAdaptater;
 import com.limelion.gameoflife.rules.ConwayRule;
 import com.limelion.gameoflife.rules.Rule;
@@ -25,6 +26,9 @@ public class GameOfLife {
     private Board board;
     private Rule rule;
     private Statistics stats;
+
+    public static byte[] MAGIC = new byte[] { 0x47, 0x4C, 0x44 };
+    public static byte VERSION = 0x01;
 
     public GameOfLife() {
 
@@ -45,14 +49,26 @@ public class GameOfLife {
         this.stats = new Statistics(board);
     }
 
-    public Board getBoard() {
+    public GameOfLife(boolean[][] boardData, Rule rule) {
 
-        return board;
+        this.board = new Board(boardData);
+        this.rule = rule;
+        this.stats = new Statistics(board);
+    }
+
+    public GameOfLife(InputAdaptater ia, Rule rule) {
+
+        this(ia.getBoardData(), rule);
     }
 
     public Statistics getStats() {
 
         return stats;
+    }
+
+    public Board getBoard() {
+
+        return board;
     }
 
     /**
@@ -67,7 +83,11 @@ public class GameOfLife {
 
         for (int i = 0; i < getBoard().getWidth(); i++)
             for (int j = 0; j < getBoard().getHeight(); j++) {
-                newBoard[i][j] = rule.apply(getBoard().getCell(i, j), board.countNeighbours(i, j));
+
+                int neighbours = board.countNeighbours(i, j);
+
+                if (neighbours > 0)
+                    newBoard[i][j] = rule.apply(getBoard().getCell(i, j), neighbours);
             }
         board = new Board(newBoard);
         stats.incSteps();

@@ -6,7 +6,7 @@
 
     <groupId>com.limelion</groupId>
     <artifactId>gameoflife</artifactId>
-    <version>0.3.0</version>
+    <version>0.4.0</version>
 
     <name>game-of-life</name>
     <url>https://limeilon.github.io/game-of-life/</url>

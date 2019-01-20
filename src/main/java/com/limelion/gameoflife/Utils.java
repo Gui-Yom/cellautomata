@@ -15,6 +15,8 @@ import java.awt.color.ColorSpace;
 import java.awt.image.*;
 import java.io.File;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 public class Utils {
 
@@ -38,9 +40,8 @@ public class Utils {
     public static boolean[] align(boolean[][] arr) {
 
         boolean[] out = new boolean[arr.length * arr[0].length];
-        int pos = 0;
 
-        for (int i = 0; i < arr.length; i++) {
+        for (int i = 0, pos = 0; i < arr.length; i++) {
             System.arraycopy(arr[i], 0, out, pos, arr[i].length);
             pos += arr[i].length;
         }
@@ -90,6 +91,10 @@ public class Utils {
                                    null),
                                  false,
                                  null);
+    }
+
+    public static byte[] itoba(int i) {
+        return ByteBuffer.allocate(4).order(ByteOrder.BIG_ENDIAN).putInt(i).array();
     }
 
 }

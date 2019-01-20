@@ -153,10 +153,10 @@ public class Board {
         } else throw new IllegalArgumentException("Specified line is not straight !");
     }
 
-    public void forEachCell(Arity3VoidFunc<Boolean, Integer, Integer> action) {
+    public void forEachCell(TriConsumerVoid<Boolean, Integer, Integer> action) {
         for (int i = 0; i < getWidth(); i++) {
             for (int j = 0; j < getHeight(); j++) {
-                action.action(getCell(i, j), i, j);
+                action.func(getCell(i, j), i, j);
             }
         }
     }
