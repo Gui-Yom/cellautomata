@@ -44,7 +44,7 @@ public class GameOfLifeTest {
 
         //OutputAdaptater outAPNG = OutputType.APNG.getImpl().init(Utils.cleanCreate("output/output.apng"), oi);
 
-        //OutputAdaptater outGIF = OutputType.GIF.getImpl().init(Utils.cleanCreate("output/output.gif"), oi);
+        OutputAdaptater outGIF = OutputType.GIF.getImpl().init(oi, Utils.cleanCreate("output/output.gif"));
 
         OutputAdaptater outPNG = OutputType.PNG.getImpl().init(oi.setBaseFileName("output/output_gen@gen@.png"));
 
@@ -53,15 +53,15 @@ public class GameOfLifeTest {
         OutputAdaptater outGLD = OutputType.GLD.getImpl().init(oi, Utils.cleanCreate("output/output.gld"));
 
         //gol.recordGen(outAPNG, 200, true);
-        //gol.recordGen(outGIF, 20, true);
         //gol.recordNext(outPNG);
         //gol.recordNext(outBMP);
         gol.recordCurrent(outGLD);
 
         gol.recordGen(outPNG, 5, false);
+        gol.recordGen(outGIF, 50, false);
 
         //outAPNG.finish();
-        //outGIF.finish();
+        outGIF.finish();
         outPNG.finish();
         //outBMP.finish();
         outGLD.finish();

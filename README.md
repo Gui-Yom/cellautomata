@@ -2,7 +2,7 @@
 [https://en.wikipedia.org/wiki/Conway%27s][wikipedia_gol]
 
 ### Example
-![example][example_image]
+![example gif][example_gif]
 
 ### Use as a dependency
 [![Release][jitpack-badge]][jitpack-url]
@@ -26,6 +26,6 @@ Then declare the following dependency :
 ```
 
 [wikipedia_gol]: https://en.wikipedia.org/wiki/Conway%27s
-[example_image]: example_output.png "Example"
+[example_gif]: output.gif "Example"
 [jitpack-badge]: https://jitpack.io/v/LimeiloN/game-of-life.svg "jitpack badge"
 [jitpack-url]: https://jitpack.io/#LimeiloN/game-of-life
