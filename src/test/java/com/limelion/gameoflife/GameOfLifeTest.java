@@ -39,7 +39,7 @@ public class GameOfLifeTest {
         gol.nextGen(50);
 
         OutputInfo oi = new OutputInfo(gol)
-            .setDelay(500, TimeUnit.MILLISECONDS)
+            .setDelay(250, TimeUnit.MILLISECONDS)
             .setRepeats(0);
 
         //OutputAdaptater outAPNG = OutputType.APNG.getImpl().init(Utils.cleanCreate("output/output.apng"), oi);
@@ -58,7 +58,7 @@ public class GameOfLifeTest {
         gol.recordCurrent(outGLD);
 
         gol.recordGen(outPNG, 5, false);
-        gol.recordGen(outGIF, 50, false);
+        gol.recordGen(outGIF, 480, false);
 
         //outAPNG.finish();
         outGIF.finish();
