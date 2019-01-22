@@ -19,35 +19,29 @@ public class OutputGIF extends OutputAdaptater {
 
     private AnimatedGifEncoder agife;
 
-    public OutputGIF() {
+    @Override
+    public OutputAdaptater init(OutputInfo oi, File output) throws FileNotFoundException {
 
-        super();
+        return init(oi, new FileOutputStream(output));
+    }
+
+    @Override
+    public OutputAdaptater init(OutputInfo oi, OutputStream output) {
+
+        super.init(oi, output);
         agife = new AnimatedGifEncoder();
-    }
-
-    @Override
-    public OutputAdaptater init(File output, EncodingInfo ei) throws FileNotFoundException {
-
-        init(new FileOutputStream(output), ei);
-        return this;
-    }
-
-    @Override
-    public OutputAdaptater init(OutputStream output, EncodingInfo ei) {
-
-        super.init(output, ei);
-        agife.setDelay(ei.getDelay());
-        agife.setSize(ei.getWidth(), ei.getHeight());
-        agife.setRepeat(ei.getNumRepeats());
+        agife.setDelay(oi.getDelay());
+        agife.setSize(oi.getMetadata().getWidth(), oi.getMetadata().getHeight());
+        agife.setRepeat(oi.getRepeats());
         agife.start(output);
         return this;
     }
 
     @Override
-    public OutputAdaptater feed(byte[] data) {
+    public OutputAdaptater feed(boolean[][] data) {
 
         if (isInited())
-            agife.addFrame(Utils.createGrayImage(data, ei.getWidth(), ei.getHeight()));
+            agife.addFrame(Utils.createGrayImage(Utils.bool_to_gray(Utils.align(data)), oi.getMetadata().getWidth(), oi.getMetadata().getHeight()));
         else
             throw new IllegalStateException("Please init the OutputAdaptater first !");
         return this;
@@ -58,11 +52,5 @@ public class OutputGIF extends OutputAdaptater {
 
         agife.finish();
         super.finish();
-    }
-
-    @Override
-    public OutputType getType() {
-
-        return OutputType.GIF;
     }
 }

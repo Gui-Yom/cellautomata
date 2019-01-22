@@ -12,20 +12,21 @@ package com.limelion.gameoflife;
 
 public class Statistics {
 
-    private int elapsedSteps = 0;
-    private Board board;
-    private long elapsedTime = 0;
+    private int gen = 0;
 
+    private long elapsedTime = 0;
     private long startTime = 0;
+
+    private Board board;
 
     public Statistics(Board b) {
 
         this.board = b;
     }
 
-    public int getElapsedSteps() {
+    public int getGen() {
 
-        return elapsedSteps;
+        return gen;
     }
 
     public long getTotalCells() {
@@ -61,11 +62,16 @@ public class Statistics {
     @Override
     public String toString() {
 
-        return String.format("Elapsed time : %d ms. Ran %d steps on %d cells. Currently alive cells : %d.", elapsedTime, elapsedSteps, getTotalCells(), getAliveCells());
+        return String.format("Compute time : %d ms. Ran %d steps on %d cells. Currently alive cells : %d.", elapsedTime, gen, getTotalCells(), getAliveCells());
     }
 
-    public void incSteps() {
+    void incGen() {
 
-        elapsedSteps++;
+        gen++;
+    }
+
+    void incGen(int n) {
+
+        gen += n;
     }
 }

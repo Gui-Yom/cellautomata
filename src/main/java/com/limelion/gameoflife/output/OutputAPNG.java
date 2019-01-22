@@ -10,6 +10,8 @@
 
 package com.limelion.gameoflife.output;
 
+import com.limelion.gameoflife.Metadata;
+import com.limelion.gameoflife.Utils;
 import com.vg.apng.APNG;
 import com.vg.apng.Gray;
 
@@ -27,10 +29,10 @@ public class OutputAPNG extends OutputAdaptater {
     }
 
     @Override
-    public OutputAdaptater feed(byte[] data) {
+    public OutputAdaptater feed(boolean[][] data) {
 
         if (isInited())
-            grays.add(new Gray(getEncodingInfo().getWidth(), getEncodingInfo().getHeight(), data, ei.getDelay()));
+            grays.add(new Gray(getInfo().getMetadata().getWidth(), getInfo().getMetadata().getHeight(), Utils.bool_to_gray(Utils.align(data)), oi.getDelay()));
         else
             throw new IllegalStateException("Please init the OutputAdaptater first !");
         return this;
@@ -39,13 +41,7 @@ public class OutputAPNG extends OutputAdaptater {
     @Override
     public void finish() throws IOException {
 
-        APNG.write(grays.toArray(new Gray[0]), getOutput(), ei.getNumRepeats());
+        APNG.write(grays.toArray(new Gray[0]), getOutput(), oi.getRepeats());
         super.finish();
-    }
-
-    @Override
-    public OutputType getType() {
-
-        return OutputType.APNG;
     }
 }

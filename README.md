@@ -21,7 +21,7 @@ Then declare the following dependency :
 <dependency>
     <groupId>com.github.LimeiloN</groupId>
 	<artifactId>game-of-life</artifactId>
-	<version>0.4.0</version>
+	<version>0.5.0</version>
 </dependency>
 ```
 

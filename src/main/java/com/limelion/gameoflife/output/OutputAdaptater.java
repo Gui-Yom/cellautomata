@@ -10,26 +10,34 @@
 
 package com.limelion.gameoflife.output;
 
+import com.limelion.gameoflife.Metadata;
+
 import java.io.*;
 
 public abstract class OutputAdaptater {
 
     protected OutputStream output = null;
-    protected EncodingInfo ei = null;
+    protected OutputInfo oi = null;
+
     protected boolean inited = false;
     protected boolean finished = false;
 
-    public OutputAdaptater(OutputStream output, EncodingInfo ei) {
+    public OutputAdaptater(OutputInfo oi, OutputStream output) {
 
-        init(output, ei);
+        init(oi, output);
     }
 
-    public OutputAdaptater(File output, EncodingInfo ei) throws FileNotFoundException {
+    public OutputAdaptater(OutputInfo oi, File f) throws FileNotFoundException {
 
-        this(new FileOutputStream(output), ei);
+        this(oi, new FileOutputStream(f));
     }
 
-    OutputAdaptater() {
+    public OutputAdaptater(OutputInfo oi) {
+
+        init(oi);
+    }
+
+    protected OutputAdaptater() {
 
     }
 
@@ -43,24 +51,32 @@ public abstract class OutputAdaptater {
         return finished;
     }
 
-    public OutputAdaptater init(OutputStream output, EncodingInfo ei) {
+    public OutputAdaptater init(OutputInfo oi, OutputStream output) {
 
         this.output = output;
-        this.ei = ei;
+        this.oi = oi;
         this.inited = true;
         return this;
     }
 
-    public OutputAdaptater init(File output, EncodingInfo ei) throws FileNotFoundException {
+    public OutputAdaptater init(OutputInfo oi, File f) throws FileNotFoundException {
 
-        return init(new FileOutputStream(output), ei);
+        return init(oi, new FileOutputStream(f));
     }
 
-    public abstract OutputAdaptater feed(byte[] data) throws IOException;
+    public OutputAdaptater init(OutputInfo oi) {
+
+        this.oi = oi;
+        this.inited = true;
+        return this;
+    }
+
+    public abstract OutputAdaptater feed(boolean[][] data) throws IOException;
 
     public void finish() throws IOException {
 
-        output.close();
+        if (output != null)
+            output.close();
         this.finished = true;
     }
 
@@ -69,10 +85,8 @@ public abstract class OutputAdaptater {
         return output;
     }
 
-    public EncodingInfo getEncodingInfo() {
+    public OutputInfo getInfo() {
 
-        return ei;
+        return oi;
     }
-
-    public abstract OutputType getType();
 }

@@ -8,33 +8,21 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.limelion.gameoflife.input;
+package com.limelion.gameoflife.rules;
 
-import javax.imageio.ImageIO;
-import java.awt.image.Raster;
-import java.io.File;
-import java.io.IOException;
+/**
+ * Rule descriptor : B36/S23
+ */
+public class HighlifeRule implements Rule {
 
-public class InputGreyscale implements InputAdaptater {
+    @Override
+    public boolean apply(boolean cell, int nCount) {
 
-    private Raster raster;
-
-    public InputGreyscale(File f) throws IOException {
-
-        raster = ImageIO.read(f).getData();
+        return !cell ? (nCount == 3 || nCount == 6) : !(nCount > 3 || nCount < 2);
     }
 
     @Override
-    public boolean[][] getBoardData() {
-
-        int width = raster.getWidth();
-        int height = raster.getHeight();
-        boolean[][] data = new boolean[width][height];
-
-        for (int i = 0; i < height; i++)
-            for (int j = 0; j < width; j++)
-                data[i][j] = raster.getSample(i, j, 0) == 0;
-
-        return data;
+    public String toString() {
+        return "B36/S23";
     }
 }

@@ -25,7 +25,7 @@ public enum OutputType {
     }
 
     /**
-     * @return if the format is an animated one. WARNING : basically, png and apng are the same but here we differentiate them.
+     * @return if the format is an animated one. WARNING : an apng file is a valid png file but here we differentiate them
      */
     public boolean isAnimated() {
         switch (this) {

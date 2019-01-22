@@ -10,21 +10,29 @@
 
 package com.limelion.gameoflife;
 
+import com.limelion.gameoflife.rules.ConwayRule;
+import com.limelion.gameoflife.rules.HighlifeRule;
+import com.limelion.gameoflife.rules.Rule;
+
 import java.awt.*;
 import java.awt.color.ColorSpace;
 import java.awt.image.*;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
 
 public class Utils {
 
     /**
-     * Convert an array of booleans to an array of bytes.<br>
-     * true -&gt; 0 (black)<br>
-     * false -&gt; 255 (white)
-     * @param arr an array of booleans
+     * Convert an array of booleans to an array of bytes.<br> true -&gt; 0 (black)<br> false -&gt; 255 (white)
+     *
+     * @param arr
+     *     an array of booleans
+     *
      * @return an array of bytes
      */
     public static byte[] bool_to_gray(boolean[] arr) {
@@ -56,15 +64,16 @@ public class Utils {
         for (int i = 0; i < arr.length; i++) {
             out[i] = arr[i];
             i++;
-            out[i] = arr[i-1];
+            out[i] = arr[i - 1];
             i++;
-            out[i] = arr[i-2];
+            out[i] = arr[i - 2];
         }
 
         return out;
     }
 
     public static File cleanCreate(String path) throws IOException {
+
         File f = new File(path);
         if (!f.exists())
             f.mkdirs();
@@ -74,27 +83,63 @@ public class Utils {
     }
 
     public static boolean checkCoords(int x, int y, int width, int height) {
+
         return x >= 0 && y >= 0 && x < width && y < height;
     }
 
     public static BufferedImage createGrayImage(byte[] buffer, int width, int height) {
+
         ColorModel cm = new ComponentColorModel(ColorSpace.getInstance(ColorSpace.CS_GRAY),
-                                                new int[] {8},
+                                                new int[] { 8 },
                                                 false,
                                                 true,
                                                 Transparency.OPAQUE,
                                                 DataBuffer.TYPE_BYTE);
         return new BufferedImage(cm,
                                  Raster.createWritableRaster(
-                                   cm.createCompatibleSampleModel(width, height),
-                                   new DataBufferByte(buffer, buffer.length),
-                                   null),
+                                     cm.createCompatibleSampleModel(width, height),
+                                     new DataBufferByte(buffer, buffer.length),
+                                     null),
                                  false,
                                  null);
     }
 
     public static byte[] itoba(int i) {
+
         return ByteBuffer.allocate(4).order(ByteOrder.BIG_ENDIAN).putInt(i).array();
+    }
+
+    public static int batoi(byte[] arr, int index) {
+
+        return ByteBuffer.wrap(arr).order(ByteOrder.BIG_ENDIAN).getInt(index);
+    }
+
+    public static byte[] strtoba(String s) {
+
+        byte[] strdata = s.getBytes(StandardCharsets.UTF_8);
+        return ByteBuffer.allocate(4 + strdata.length).order(ByteOrder.BIG_ENDIAN).putInt(strdata.length).put(strdata).array();
+    }
+
+    public static byte[] readAllBytes(InputStream is) throws IOException {
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        byte[] buffer = new byte[1024];
+        for (int len = is.read(buffer); len != -1; len = is.read(buffer)) {
+            baos.write(buffer, 0, len);
+        }
+        return baos.toByteArray();
+    }
+
+    public static Rule parse(String ruleDescriptor) {
+
+        switch (ruleDescriptor) {
+            case "B3/S23":
+                return new ConwayRule();
+            case "B36/S23":
+                return new HighlifeRule();
+            default:
+                return new ConwayRule();
+        }
     }
 
 }

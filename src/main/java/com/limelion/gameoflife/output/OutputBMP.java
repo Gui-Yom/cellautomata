@@ -13,24 +13,45 @@ package com.limelion.gameoflife.output;
 import com.limelion.gameoflife.Utils;
 
 import javax.imageio.ImageIO;
+import java.io.File;
 import java.io.IOException;
 
+/**
+ * Allows encoding the GameOfLife states into BMP files.
+ */
 public class OutputBMP extends OutputAdaptater {
 
+    private int numFiles = 0;
+
     @Override
-    public OutputAdaptater feed(byte[] data) throws IOException {
+    public OutputAdaptater feed(boolean[][] data) throws IOException {
 
         if (isInited())
-            ImageIO.write(Utils.createGrayImage(data, ei.getWidth(), ei.getHeight()), "bmp", output);
+            if (output != null)
+                ImageIO.write(
+                    Utils.createGrayImage(
+                        Utils.bool_to_gray(Utils.align(data)),
+                        oi.getMetadata().getWidth(),
+                        oi.getMetadata().getHeight()),
+                    "bmp",
+                    output);
+            else {
+
+                String fname = oi.getBaseFileName();
+                fname = fname.replace("@gen@", String.valueOf(oi.getMetadata().getGen()));
+                fname = fname.replace("@num@", String.valueOf(numFiles++));
+
+                ImageIO.write(
+                    Utils.createGrayImage(
+                        Utils.bool_to_gray(Utils.align(data)),
+                        oi.getMetadata().getWidth(),
+                        oi.getMetadata().getHeight()),
+                    "bmp",
+                    new File(fname));
+            }
         else
             throw new IllegalStateException("Please init the OutputAdaptater first !");
+
         return this;
     }
-
-    @Override
-    public OutputType getType() {
-
-        return OutputType.BMP;
-    }
-
 }

@@ -10,62 +10,68 @@
 
 package com.limelion.gameoflife.output;
 
+import com.limelion.gameoflife.GameOfLife;
+import com.limelion.gameoflife.Metadata;
+
 import java.util.concurrent.TimeUnit;
 
-public class EncodingInfo {
+/**
+ * A class holding data about the encoding process.
+ */
+public class OutputInfo {
 
     private int delay;
-    private int width;
-    private int height;
-    private int numRepeats;
-    private int numFrames;
+    private int repeats;
+    // Used when creating multiples files
+    // @gen@ to include generation
+    // @n@ to include the img number
+    private String baseFileName = null;
+    private Metadata metadata;
 
-    public EncodingInfo() {
+    private GameOfLife gol;
+
+    public OutputInfo(GameOfLife gol) {
+
         delay = 0;
+        repeats = 0;
+        this.gol = gol;
     }
 
-    public int getWidth() {
-        return width;
+    public String getBaseFileName() {
+
+        return baseFileName;
     }
 
-    public EncodingInfo setWidth(int width) {
-        this.width = width;
+    public OutputInfo setBaseFileName(String baseFileName) {
+
+        this.baseFileName = baseFileName;
         return this;
     }
 
-    public int getHeight() {
-        return height;
+    public Metadata getMetadata() {
+
+        return gol.getMetadata();
     }
 
-    public EncodingInfo setHeight(int height) {
-        this.height = height;
+    public int getRepeats() {
+
+        return repeats;
+    }
+
+    public OutputInfo setRepeats(int repeats) {
+
+        this.repeats = repeats;
         return this;
     }
 
-    public int getNumRepeats() {
-        return numRepeats;
-    }
+    public OutputInfo setDelay(int time, TimeUnit timeUnit) {
 
-    public EncodingInfo setNumRepeats(int numRepeats) {
-        this.numRepeats = numRepeats;
-        return this;
-    }
-
-    public int getNumFrames() {
-        return numFrames;
-    }
-
-    public EncodingInfo setNumFrames(int numFrames) {
-        this.numFrames = numFrames;
-        return this;
-    }
-
-    public EncodingInfo setDelay(int time, TimeUnit timeUnit) {
         delay = (int) TimeUnit.MILLISECONDS.convert(time, timeUnit);
         return this;
     }
 
     public int getDelay() {
+
         return delay;
     }
 

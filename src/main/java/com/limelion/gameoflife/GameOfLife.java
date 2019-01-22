@@ -10,7 +10,6 @@
 
 package com.limelion.gameoflife;
 
-import com.limelion.gameoflife.input.InputAdaptater;
 import com.limelion.gameoflife.output.OutputAdaptater;
 import com.limelion.gameoflife.rules.ConwayRule;
 import com.limelion.gameoflife.rules.Rule;
@@ -19,53 +18,84 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 /**
- * The main class.
+ * Represent a party of game of life, with its own universe and rules.
  */
 public class GameOfLife {
 
     private Board board;
     private Rule rule;
     private Statistics stats;
+    private Metadata meta;
 
-    public static byte[] MAGIC = new byte[] { 0x47, 0x4C, 0x44 };
-    public static byte VERSION = 0x01;
-
+    /**
+     * Create a new GameOfLife with a default universe of 100*100 and the Conway's rule.
+     */
     public GameOfLife() {
 
         this(100, new ConwayRule());
     }
 
+    /**
+     * Create a new GameOfLife with a square universe and the specified rule.
+     * @param square the length of a side
+     * @param rule the rule to use
+     */
     public GameOfLife(int square, Rule rule) {
 
-        this.board = new Board(square);
-        this.rule = rule;
-        this.stats = new Statistics(board);
+        this(square, square, rule);
     }
 
+    /**
+     * Create a new GameOfLife with a rectangular universe and the specified rule.
+     * @param width the width of the rectangle
+     * @param height the height of the rectangle
+     * @param rule the rule to use
+     */
     public GameOfLife(int width, int height, Rule rule) {
 
         this.board = new Board(width, height);
         this.rule = rule;
         this.stats = new Statistics(board);
+        this.meta = new Metadata().setWidth(width).setHeight(height).setRule(rule.toString());
     }
 
+    /**
+     * Create a new GameOfLife from cells data.
+     * @param boardData the cells data
+     * @param rule the rule to use
+     */
     public GameOfLife(boolean[][] boardData, Rule rule) {
 
         this.board = new Board(boardData);
         this.rule = rule;
         this.stats = new Statistics(board);
+        this.meta = new Metadata().setWidth(board.getWidth()).setHeight(board.getHeight()).setRule(rule.toString());
     }
 
-    public GameOfLife(InputAdaptater ia, Rule rule) {
+    /**
+     * Create a new GameOfLife from a parsed GLD file.
+     * @param gld the parsed GLD file
+     */
+    public GameOfLife(Goldata gld) {
 
-        this(ia.getBoardData(), rule);
+        this.board = new Board(gld.getData());
+        this.stats = new Statistics(board);
+        stats.incGen(gld.getMetadata().getGen());
+        this.rule = Utils.parse(gld.getMetadata().getRule());
+        this.meta = new Metadata().setWidth(board.getWidth()).setHeight(board.getHeight()).setRule(rule.toString());
     }
 
+    /**
+     * @return the statistics about the current game
+     */
     public Statistics getStats() {
 
         return stats;
     }
 
+    /**
+     * @return the universe
+     */
     public Board getBoard() {
 
         return board;
@@ -74,7 +104,7 @@ public class GameOfLife {
     /**
      * Run a new step. A step is a new computation round over the board with the given rule.
      */
-    public void nextStep() {
+    public void nextGen() {
 
         stats.startRecordTime();
 
@@ -90,7 +120,7 @@ public class GameOfLife {
                     newBoard[i][j] = rule.apply(getBoard().getCell(i, j), neighbours);
             }
         board = new Board(newBoard);
-        stats.incSteps();
+        stats.incGen();
         stats.stopRecordTime();
     }
 
@@ -100,10 +130,10 @@ public class GameOfLife {
      * @param n
      *     the number of steps to run
      */
-    public void nextStep(int n) {
+    public void nextGen(int n) {
 
         for (int i = 0; i < n; i++)
-            nextStep();
+            nextGen();
     }
 
     /**
@@ -114,10 +144,10 @@ public class GameOfLife {
      *
      * @throws IOException
      */
-    public void recordCurrentState(OutputAdaptater oa) throws IOException {
+    public void recordCurrent(OutputAdaptater oa) throws IOException {
 
         stats.startRecordTime();
-        oa.feed(Utils.bool_to_gray(Utils.align(getBoard().getCells())));
+        oa.feed(getBoard().getCells());
         stats.stopRecordTime();
     }
 
@@ -129,10 +159,10 @@ public class GameOfLife {
      *
      * @throws IOException
      */
-    public void recordNextState(OutputAdaptater oa) throws IOException {
+    public void recordNext(OutputAdaptater oa) throws IOException {
 
-        nextStep();
-        recordCurrentState(oa);
+        nextGen();
+        recordCurrent(oa);
     }
 
     /**
@@ -147,19 +177,12 @@ public class GameOfLife {
      *
      * @throws IOException
      */
-    public void recordSteps(OutputAdaptater oa, int n, boolean doRecordCurrent) throws IOException {
+    public void recordGen(OutputAdaptater oa, int n, boolean doRecordCurrent) throws IOException {
 
-        if (oa.getType().isAnimated()) {
-            if (doRecordCurrent)
-                recordCurrentState(oa);
-            for (int i = 0; i < n; i++)
-                recordNextState(oa);
-        } else {
-            if (doRecordCurrent)
-                recordCurrentState(oa);
-            else
-                recordNextState(oa);
-        }
+        if (doRecordCurrent)
+            recordCurrent(oa);
+        for (int i = 0; i < n; i++)
+            recordNext(oa);
     }
 
     public void createhtmlplayer(String path, String animationPath) throws IOException {
@@ -167,5 +190,13 @@ public class GameOfLife {
         PrintWriter pw = new PrintWriter(Utils.cleanCreate(path));
         pw.printf("<!DOCTYPE html>%n<html>%n  <head>%n    <title>%s</title>%n  </head>%n  <body>%n    <img src=\"%s\" style=\"border:3px solid black\">%n  </body>%n</html>%n", animationPath, animationPath);
         pw.close();
+    }
+
+    /**
+     * @return this game metadata
+     */
+    public Metadata getMetadata() {
+
+        return meta.setGen(stats.getGen());
     }
 }

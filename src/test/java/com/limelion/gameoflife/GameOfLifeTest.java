@@ -10,8 +10,11 @@
 
 package com.limelion.gameoflife;
 
-import com.limelion.gameoflife.input.InputGLD;
-import com.limelion.gameoflife.output.*;
+import com.limelion.gameoflife.input.Input;
+import com.limelion.gameoflife.output.OutputAdaptater;
+import com.limelion.gameoflife.output.OutputGLD;
+import com.limelion.gameoflife.output.OutputInfo;
+import com.limelion.gameoflife.output.OutputType;
 import com.limelion.gameoflife.rules.ConwayRule;
 import org.junit.Test;
 
@@ -33,27 +36,29 @@ public class GameOfLifeTest {
         //gol.getBoard().drawLine(500, 500, 500, 800);
         gol.getBoard().drawLine(50, 250, 450, 250);
 
-        EncodingInfo ei = new EncodingInfo()
-            .setHeight(gol.getBoard().getHeight())
-            .setWidth(gol.getBoard().getWidth())
+        gol.nextGen(50);
+
+        OutputInfo oi = new OutputInfo(gol)
             .setDelay(500, TimeUnit.MILLISECONDS)
-            .setNumRepeats(0);
+            .setRepeats(0);
 
-        //OutputAdaptater outAPNG = OutputType.APNG.getImpl().init(Utils.cleanCreate("output/output.apng"), ei);
+        //OutputAdaptater outAPNG = OutputType.APNG.getImpl().init(Utils.cleanCreate("output/output.apng"), oi);
 
-        //OutputAdaptater outGIF = OutputType.GIF.getImpl().init(Utils.cleanCreate("output/output.gif"), ei);
+        //OutputAdaptater outGIF = OutputType.GIF.getImpl().init(Utils.cleanCreate("output/output.gif"), oi);
 
-        OutputAdaptater outPNG = OutputType.PNG.getImpl().init(Utils.cleanCreate("output/output.png"), ei);
+        OutputAdaptater outPNG = OutputType.PNG.getImpl().init(oi.setBaseFileName("output/output_gen@gen@.png"));
 
-        //OutputAdaptater outBMP = OutputType.BMP.getImpl().init(Utils.cleanCreate("output/output.bmp"), ei);
+        //OutputAdaptater outBMP = OutputType.BMP.getImpl().init(Utils.cleanCreate("output/output.bmp"), oi);
 
-        OutputAdaptater outGLD = OutputType.GLD.getImpl().init(Utils.cleanCreate("output/output.gld"), ei);
+        OutputAdaptater outGLD = OutputType.GLD.getImpl().init(oi, Utils.cleanCreate("output/output.gld"));
 
-        //gol.recordSteps(outAPNG, 200, true);
-        //gol.recordSteps(outGIF, 20, true);
-        gol.recordNextState(outPNG);
-        //gol.recordNextState(outBMP);
-        gol.recordCurrentState(outGLD);
+        //gol.recordGen(outAPNG, 200, true);
+        //gol.recordGen(outGIF, 20, true);
+        //gol.recordNext(outPNG);
+        //gol.recordNext(outBMP);
+        gol.recordCurrent(outGLD);
+
+        gol.recordGen(outPNG, 5, false);
 
         //outAPNG.finish();
         //outGIF.finish();
@@ -69,15 +74,13 @@ public class GameOfLifeTest {
         System.out.println("Generated files.");
         System.out.println(gol.getStats());
 
-        GameOfLife gol2 = new GameOfLife(new InputGLD(new File("output/output.gld")), new ConwayRule());
+        GameOfLife gol2 = new GameOfLife(Input.fromGLD(new File("output/output.gld")));
 
-        OutputAdaptater outPNG2 = new OutputPNG().init(Utils.cleanCreate("output/output2.png"), ei);
-        OutputAdaptater outGLD2 = new OutputGLD().init(Utils.cleanCreate("output/output2.gld"), ei);
 
-        gol.recordCurrentState(outPNG2);
-        gol.recordCurrentState(outGLD2);
+        OutputAdaptater outGLD2 = new OutputGLD().init(new OutputInfo(gol2), Utils.cleanCreate("output/output2.gld"));
 
-        outPNG2.finish();
+        gol2.recordCurrent(outGLD2);
+
         outGLD2.finish();
 
         System.out.println("Generated second fileset.");

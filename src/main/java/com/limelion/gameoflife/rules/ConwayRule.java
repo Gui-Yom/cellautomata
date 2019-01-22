@@ -10,10 +10,18 @@
 
 package com.limelion.gameoflife.rules;
 
+/**
+ * Rule descriptor : B3/S23
+ */
 public class ConwayRule implements Rule {
 
     @Override
-    public boolean apply(boolean cell, int neighboursCount) {
-        return !cell ? neighboursCount == 3 : !(neighboursCount > 3 || neighboursCount < 2);
+    public boolean apply(boolean cell, int nCount) {
+        return !cell ? nCount == 3 : !(nCount > 3 || nCount < 2);
+    }
+
+    @Override
+    public String toString() {
+        return "B3/S23";
     }
 }

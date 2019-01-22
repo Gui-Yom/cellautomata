@@ -10,46 +10,22 @@
 
 package com.limelion.gameoflife.output;
 
-import com.limelion.gameoflife.GameOfLife;
-import com.limelion.gameoflife.Utils;
+import com.limelion.gameoflife.Goldata;
 
 import java.io.IOException;
-import java.util.zip.Deflater;
 
 public class OutputGLD extends OutputAdaptater {
 
     @Override
-    public OutputAdaptater feed(byte[] data) throws IOException {
+    public OutputAdaptater feed(boolean[][] data) throws IOException {
 
         if (isInited()) {
 
-            output.write(GameOfLife.MAGIC);
-            output.write(GameOfLife.VERSION);
-            output.write(Utils.itoba(ei.getWidth()));
-            output.write(Utils.itoba(ei.getHeight()));
-
-            // First pass
-            Deflater deflater = new Deflater(Deflater.BEST_COMPRESSION);
-            deflater.setInput(data);
-            deflater.finish();
-
-            byte[] buf = new byte[ei.getHeight() * ei.getWidth()];
-            int comp = deflater.deflate(buf);
-            assert comp != 0;
-            deflater.end();
-
-            // Finally write to file
-            output.write(buf, 0, comp);
+            Goldata.create(oi.getMetadata(), data).write(output);
 
         } else
             throw new IllegalStateException("Please init the OutputAdaptater first !");
 
         return this;
-    }
-
-    @Override
-    public OutputType getType() {
-
-        return OutputType.GLD;
     }
 }
