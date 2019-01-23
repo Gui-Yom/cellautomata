@@ -8,7 +8,9 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.limelion.gameoflife;
+package com.limelion.glife;
+
+import com.limelion.glife.utils.Utils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,6 +22,9 @@ import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 import java.util.zip.ZipException;
 
+/**
+ * Represents the file format to save the current game instance.
+ */
 public class Goldata {
 
     public static byte[] MAGIC = new byte[] { 0x47, 0x4C, 0x44 };

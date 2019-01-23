@@ -8,20 +8,10 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.limelion.gameoflife.rules;
+package com.limelion.glife.utils;
 
-/**
- * Rule descriptor : B3/S23
- */
-public class ConwayRule implements Rule {
+@FunctionalInterface
+public interface TriConsumerVoid<T, U, V> {
 
-    @Override
-    public boolean apply(boolean cell, int nCount) {
-        return !cell ? nCount == 3 : !(nCount > 3 || nCount < 2);
-    }
-
-    @Override
-    public String toString() {
-        return "B3/S23";
-    }
+    void func(T t, U u, V v);
 }

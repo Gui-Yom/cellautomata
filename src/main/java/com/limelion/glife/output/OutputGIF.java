@@ -8,31 +8,40 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.limelion.gameoflife.output;
+package com.limelion.glife.output;
 
-import com.limelion.gameoflife.Metadata;
-import com.limelion.gameoflife.Utils;
-import com.vg.apng.APNG;
-import com.vg.apng.Gray;
+import com.limelion.glife.utils.Utils;
+import com.madgag.gif.fmsware.AnimatedGifEncoder;
 
-import java.io.IOException;
-import java.util.ArrayList;
+import java.io.*;
 
-public class OutputAPNG extends OutputAdaptater {
+public class OutputGIF extends OutputAdaptater {
 
-    private ArrayList<Gray> grays;
+    private AnimatedGifEncoder agife;
 
-    public OutputAPNG() {
+    @Override
+    public OutputAdaptater init(OutputInfo oi, File output) throws FileNotFoundException {
 
-        super();
-        grays = new ArrayList<>();
+        return init(oi, new FileOutputStream(output));
+    }
+
+    @Override
+    public OutputAdaptater init(OutputInfo oi, OutputStream output) {
+
+        super.init(oi, output);
+        agife = new AnimatedGifEncoder();
+        agife.setDelay(oi.getDelay());
+        agife.setSize(oi.getMetadata().getWidth(), oi.getMetadata().getHeight());
+        agife.setRepeat(oi.getRepeats());
+        agife.start(output);
+        return this;
     }
 
     @Override
     public OutputAdaptater feed(boolean[][] data) {
 
         if (isInited())
-            grays.add(new Gray(getInfo().getMetadata().getWidth(), getInfo().getMetadata().getHeight(), Utils.bool_to_gray(Utils.align(data)), oi.getDelay()));
+            agife.addFrame(Utils.createGrayImage(Utils.bool_to_gray(Utils.align(data)), oi.getMetadata().getWidth(), oi.getMetadata().getHeight()));
         else
             throw new IllegalStateException("Please init the OutputAdaptater first !");
         return this;
@@ -41,7 +50,7 @@ public class OutputAPNG extends OutputAdaptater {
     @Override
     public void finish() throws IOException {
 
-        APNG.write(grays.toArray(new Gray[0]), getOutput(), oi.getRepeats());
+        agife.finish();
         super.finish();
     }
 }

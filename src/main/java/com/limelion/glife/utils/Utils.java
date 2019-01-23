@@ -8,19 +8,12 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.limelion.gameoflife;
-
-import com.limelion.gameoflife.rules.ConwayRule;
-import com.limelion.gameoflife.rules.HighlifeRule;
-import com.limelion.gameoflife.rules.Rule;
+package com.limelion.glife.utils;
 
 import java.awt.*;
 import java.awt.color.ColorSpace;
 import java.awt.image.*;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
@@ -82,11 +75,6 @@ public class Utils {
         return f;
     }
 
-    public static boolean checkCoords(int x, int y, int width, int height) {
-
-        return x >= 0 && y >= 0 && x < width && y < height;
-    }
-
     public static BufferedImage createGrayImage(byte[] buffer, int width, int height) {
 
         ColorModel cm = new ComponentColorModel(ColorSpace.getInstance(ColorSpace.CS_GRAY),
@@ -130,16 +118,10 @@ public class Utils {
         return baos.toByteArray();
     }
 
-    public static Rule parse(String ruleDescriptor) {
+    public static void createhtmlplayer(String path, String animationPath) throws IOException {
 
-        switch (ruleDescriptor) {
-            case "B3/S23":
-                return new ConwayRule();
-            case "B36/S23":
-                return new HighlifeRule();
-            default:
-                return new ConwayRule();
-        }
+        PrintWriter pw = new PrintWriter(Utils.cleanCreate(path));
+        pw.printf("<!DOCTYPE html>%n<html>%n  <head>%n    <title>%s</title>%n  </head>%n  <body>%n    <img src=\"%s\" style=\"border:3px solid black\">%n  </body>%n</html>%n", animationPath, animationPath);
+        pw.close();
     }
-
 }

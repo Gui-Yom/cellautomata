@@ -8,10 +8,10 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.limelion.gameoflife.output;
+package com.limelion.glife.output;
 
-import com.limelion.gameoflife.GameOfLife;
-import com.limelion.gameoflife.Metadata;
+import com.limelion.glife.GameOfLife;
+import com.limelion.glife.Metadata;
 
 import java.util.concurrent.TimeUnit;
 
@@ -28,13 +28,11 @@ public class OutputInfo {
     private String baseFileName = null;
     private Metadata metadata;
 
-    private GameOfLife gol;
-
     public OutputInfo(GameOfLife gol) {
 
         delay = 0;
         repeats = 0;
-        this.gol = gol;
+        this.metadata = gol.getMetadata();
     }
 
     public String getBaseFileName() {
@@ -50,7 +48,7 @@ public class OutputInfo {
 
     public Metadata getMetadata() {
 
-        return gol.getMetadata();
+        return metadata;
     }
 
     public int getRepeats() {

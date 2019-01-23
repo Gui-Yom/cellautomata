@@ -1,27 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.limelion</groupId>
-    <artifactId>gameoflife</artifactId>
-    <version>0.5.0</version>
+    <artifactId>glife</artifactId>
+    <version>0.6.0</version>
 
-    <name>game-of-life</name>
-    <url>https://limeilon.github.io/game-of-life/</url>
+    <name>glife-lib</name>
+    <url>https://limeilon.github.io/glife-lib/</url>
 
     <packaging>jar</packaging>
 
     <issueManagement>
-        <url>https://github.com/LimeiloN/game-of-life/issues</url>
+        <url>https://github.com/LimeiloN/glife-lib/issues</url>
         <system>GitHub Issues</system>
     </issueManagement>
 
     <licenses>
         <license>
             <name>MIT License</name>
-            <url>https://github.com/limeilon/game-of-life/blob/master/LICENSE</url>
+            <url>https://github.com/LimeiloN/glife-lib/blob/master/LICENSE</url>
         </license>
     </licenses>
 
@@ -33,9 +32,9 @@
     </developers>
 
     <scm>
-        <url>https://github.com/LimeiloN/game-of-life</url>
-        <connection>scm:git:git://github.com/LimeiloN/game-of-life.git</connection>
-        <developerConnection>scm:git:git@github.com:LimeiloN/game-of-life.git</developerConnection>
+        <url>https://github.com/LimeiloN/glife-lib</url>
+        <connection>scm:git:git://github.com/LimeiloN/glife-lib.git</connection>
+        <developerConnection>scm:git:git@github.com:LimeiloN/glife-lib.git</developerConnection>
     </scm>
 
     <properties>
@@ -90,15 +89,6 @@
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.1.1</version>
-                <!--
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <mainClass>com.limelion.gameoflife.GameOfLife</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
-                -->
             </plugin>
             <plugin>
                 <artifactId>maven-deploy-plugin</artifactId>
@@ -106,7 +96,7 @@
             </plugin>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0-M3</version>
+                <version>3.0.0-M2</version>
             </plugin>
             <plugin>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
@@ -138,32 +128,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <!--
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.1</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <createDependencyReducedPom>false</createDependencyReducedPom>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>1.6.0</version>
-                <configuration>
-                    <includeProjectDependencies>true</includeProjectDependencies>
-                </configuration>
-            </plugin>
-            -->
         </plugins>
     </build>
 </project>

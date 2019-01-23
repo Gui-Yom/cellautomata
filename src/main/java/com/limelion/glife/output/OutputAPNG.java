@@ -8,24 +8,39 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.limelion.gameoflife.output;
+package com.limelion.glife.output;
 
-import com.limelion.gameoflife.Goldata;
+import com.limelion.glife.utils.Utils;
+import com.vg.apng.APNG;
+import com.vg.apng.Gray;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
-public class OutputGLD extends OutputAdaptater {
+public class OutputAPNG extends OutputAdaptater {
+
+    private ArrayList<Gray> grays;
+
+    public OutputAPNG() {
+
+        super();
+        grays = new ArrayList<>();
+    }
 
     @Override
-    public OutputAdaptater feed(boolean[][] data) throws IOException {
+    public OutputAdaptater feed(boolean[][] data) {
 
-        if (isInited()) {
-
-            Goldata.create(oi.getMetadata(), data).write(output);
-
-        } else
+        if (isInited())
+            grays.add(new Gray(getInfo().getMetadata().getWidth(), getInfo().getMetadata().getHeight(), Utils.bool_to_gray(Utils.align(data)), oi.getDelay()));
+        else
             throw new IllegalStateException("Please init the OutputAdaptater first !");
-
         return this;
+    }
+
+    @Override
+    public void finish() throws IOException {
+
+        APNG.write(grays.toArray(new Gray[0]), getOutput(), oi.getRepeats());
+        super.finish();
     }
 }
