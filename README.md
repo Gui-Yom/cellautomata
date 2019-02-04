@@ -2,14 +2,14 @@
 Conway's Game of Life : [https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life][wikipedia_gol]
 
 ### Tf is this ?
-This is a java implementation of a Game Of Life computation engine (see link above). It's able to create animated images (GIF and APNG), as well as static ones, of multiples generations. It can also take an image as input for the generation 0.
-Note that a special file format has been created to save the current computation step (.gld file).
+This is a java implementation of a Game Of Life computation engine (see link above).
+It takes an image or a serialized (.gld) file as input.
+Then it can create animated sequences (GIF and APNG), as well as static ones, of multiples generations.
 
-Currently, the engine is very slow :s as it naively compute the entire universe each round.
+The .gld file format has been created on purpose to save the current state for later use.
 
 ### Example
-Here's an example of what can be achieved.
-
+Here's an example of what can be achieved :
 ![example gif][example_gif]
 
 ### Library usage
@@ -29,7 +29,7 @@ Then declare the following dependency :
 <dependency>
     <groupId>com.github.LimeiloN</groupId>
 	<artifactId>glife-lib</artifactId>
-	<version>0.5.1</version>
+	<version>1.0.0</version>
 </dependency>
 ```
 

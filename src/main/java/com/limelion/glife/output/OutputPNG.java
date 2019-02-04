@@ -14,44 +14,57 @@ import com.limelion.glife.utils.Utils;
 
 import javax.imageio.ImageIO;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  * Allows encoding the GameOfLife states into PNG files.
  */
-public class OutputPNG extends OutputAdaptater {
+public class OutputPNG extends OutputAdapter {
 
     private int numFiles = 0;
 
+    public OutputPNG(OutputParams op, OutputStream output) {
+
+        super(op, output);
+    }
+
+    public OutputPNG(OutputParams op, File f) throws FileNotFoundException {
+
+        super(op, f);
+    }
+
+    public OutputPNG(OutputParams op) {
+
+        super(op);
+    }
+
     @Override
-    public OutputAdaptater feed(boolean[][] data) throws IOException {
+    public OutputAdapter feed(byte[] data) throws IOException {
 
-        if (isInited())
-            if (output != null)
-                ImageIO.write(
-                    Utils.createGrayImage(
-                        Utils.bool_to_gray(Utils.align(data)),
-                        oi.getMetadata().getWidth(),
-                        oi.getMetadata().getHeight()),
-                    "png",
-                    output);
-            else {
+        if (output != null) {
+            ImageIO.write(
+                Utils.createGrayImage(
+                    data,
+                    op.getStateInfo().getWidth(),
+                    op.getStateInfo().getHeight()),
+                "png",
+                output);
+        } else {
 
-                String fname = oi.getBaseFileName();
-                fname = fname.replace("@gen@", String.valueOf(oi.getMetadata().getGen()));
-                fname = fname.replace("@num@", String.valueOf(numFiles++));
+            String fname = op.getBaseFileName();
+            fname = fname.replace("@gen@", String.valueOf(op.getStateInfo().getGen()));
+            fname = fname.replace("@num@", String.valueOf(numFiles++));
 
-                ImageIO.write(
-                    Utils.createGrayImage(
-                        Utils.bool_to_gray(Utils.align(data)),
-                        oi.getMetadata().getWidth(),
-                        oi.getMetadata().getHeight()),
-                    "png",
-                    new File(fname));
-            }
-        else
-            throw new IllegalStateException("Please init the OutputAdaptater first !");
-
+            ImageIO.write(
+                Utils.createGrayImage(
+                    data,
+                    op.getStateInfo().getWidth(),
+                    op.getStateInfo().getHeight()),
+                "png",
+                Utils.cleanCreate(fname));
+        }
         return this;
     }
 }

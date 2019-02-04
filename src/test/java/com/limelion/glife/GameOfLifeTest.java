@@ -11,11 +11,9 @@
 package com.limelion.glife;
 
 import com.limelion.glife.input.Input;
-import com.limelion.glife.output.OutputAdaptater;
-import com.limelion.glife.output.OutputGLD;
-import com.limelion.glife.output.OutputInfo;
-import com.limelion.glife.output.OutputType;
+import com.limelion.glife.output.*;
 import com.limelion.glife.utils.Utils;
+import com.vg.apng.APNG;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -30,68 +28,143 @@ public class GameOfLifeTest {
     @Test
     public void test() throws IOException {
 
+        System.out.println("***** General testing *****");
         //HERE WE GO !
         GameOfLife gol = new GameOfLife(500, Rule.Square2D.CONWAY);
 
-        //gol.getUniverse().drawLine(20, 20, 20, 26);
-        //gol.getUniverse().drawLine(500, 500, 500, 800);
-        gol.drawLine(50, 250, 450, 250);
+        gol.drawLine(250, 50, 250, 50);
 
-        gol.nextGen(50);
-
-        OutputInfo oi = new OutputInfo(gol)
+        OutputParams op = new OutputParams(gol.getStateInfo().setCreator("Me").setComment("test"))
             .setDelay(250, TimeUnit.MILLISECONDS)
             .setRepeats(0);
 
-        //OutputAdaptater outAPNG = OutputType.APNG.getImpl().init(Utils.cleanCreate("output/output.apng"), oi);
+        try (OutputAdapter outBMP = new OutputBMP(op, Utils.cleanCreate("output/testOutput.bmp"))) {
+            gol.record(outBMP);
+        }
 
-        OutputAdaptater outGIF = OutputType.GIF.getImpl().init(oi, Utils.cleanCreate("output/output.gif"));
+        try (OutputAdapter outPNG = new OutputPNG(op.setBaseFileName("output/testOutput_gen@gen@.png"))) {
+            gol.record(outPNG, 9, true);
+        }
 
-        OutputAdaptater outPNG = OutputType.PNG.getImpl().init(oi.setBaseFileName("output/output_gen@gen@.png"));
-
-        //OutputAdaptater outBMP = OutputType.BMP.getImpl().init(Utils.cleanCreate("output/output.bmp"), oi);
-
-        OutputAdaptater outGLD = OutputType.GLD.getImpl().init(oi, Utils.cleanCreate("output/output.gld"));
-
-        //gol.recordGen(outAPNG, 200, true);
-        //gol.recordNext(outPNG);
-        //gol.recordNext(outBMP);
+        OutputAdapter outGLD = new OutputGLD(op, Utils.cleanCreate("output/testOutput.gld"));
         gol.record(outGLD);
+        outGLD.close();
 
-        gol.recordGen(Arrays.asList(outPNG, outGIF), 5, false);
-        gol.recordGen(outGIF, 395, false);
+        try (OutputAdapter outAPNG = new OutputAPNG(op, Utils.cleanCreate("output/testOutput.apng"));
+             OutputAdapter outGIF = new OutputGIF(op, Utils.cleanCreate("output/testOutput.gif"))) {
 
-        //outAPNG.finish();
-        outGIF.finish();
-        outPNG.finish();
-        //outBMP.finish();
-        outGLD.finish();
+            gol.record(Arrays.asList(outAPNG, outGIF), 50, false);
+        }
 
-        //Utils.createhtmlplayer("output/playerAPNG.html", "output.apng");
-        Utils.createhtmlplayer("output/playerGIF.html", "output.gif");
-        //Utils.createhtmlplayer("output/playerPNG.html", "output.png");
-        //Utils.createhtmlplayer("output/playerBMP.html", "output.bmp");
+        Utils.createhtmlplayer("output/playerAPNG.html", "testOutput.apng");
+        Utils.createhtmlplayer("output/playerGIF.html", "testOutput.gif");
 
         System.out.println("Generated files.");
-        System.out.println(gol.getStats());
+        System.out.println("Stats : " + gol.getStats());
 
-        GameOfLife gol2 = new GameOfLife(Input.fromGLD(new File("output/output.gld")));
+        GameOfLife gol2 = new GameOfLife(Input.fromGLD(new File("output/testOutput.gld")));
 
-
-        OutputAdaptater outGLD2 = new OutputGLD().init(new OutputInfo(gol2), Utils.cleanCreate("output/output2.gld"));
-
+        OutputAdapter outGLD2 = new OutputGLD(new OutputParams(gol2.getStateInfo()), Utils.cleanCreate("output/testOutput2.gld"));
         gol2.record(outGLD2);
-
-        outGLD2.finish();
+        outGLD2.close();
 
         System.out.println("Generated second fileset.");
         System.out.println("Comparing ...");
 
-        byte[] gld1 = Files.readAllBytes(new File("output/output.gld").toPath());
-        byte[] gld2 = Files.readAllBytes(new File("output/output2.gld").toPath());
+        byte[] gld1 = Files.readAllBytes(new File("output/testOutput.gld").toPath());
+        byte[] gld2 = Files.readAllBytes(new File("output/testOutput2.gld").toPath());
 
         Assert.assertArrayEquals(gld1, gld2);
 
         System.out.println("Files are similar. OK");
+        System.out.println("***** End of general tests *****");
+    }
+
+    @Test
+    public void benchmarks() {
+
+        System.out.println("***** Blank benchmark (no output) *****");
+
+        long startTime = System.currentTimeMillis();
+
+        GameOfLife gol = new GameOfLife(1000, Rule.Square2D.CONWAY);
+        gol.drawLine(50, 50, 950, 950);
+        gol.nextGen(1000);
+
+        System.out.printf("Elapsed time : %d ms%n", System.currentTimeMillis() - startTime);
+        System.out.println("Blank benchmark : " + gol.getStats());
+    }
+
+    @Test
+    public void benchGIF() throws IOException {
+
+        System.out.println("***** GIF benchmark *****");
+
+        GameOfLife gol = new GameOfLife(500, Rule.Square2D.CONWAY);
+        gol.drawLine(250, 50, 250, 450);
+
+        OutputAdapter oa = new OutputGIF(
+            new OutputParams(gol.getStateInfo()).setRepeats(0).setDelay(50, TimeUnit.MILLISECONDS),
+            Utils.cleanCreate("output/benchGIF.gif"));
+
+        gol.record(oa, 500, false);
+        oa.close();
+
+        System.out.println("GIF benchmark : " + gol.getStats());
+        Utils.createhtmlplayer("output/benchGIF.html", "benchGIF.gif");
+    }
+
+    @Test
+    public void benchAPNG() throws IOException {
+
+        System.out.println("***** APNG benchmark *****");
+
+        GameOfLife gol = new GameOfLife(500, Rule.Square2D.CONWAY);
+        gol.drawLine(250, 50, 250, 450);
+
+        OutputAdapter oa = new OutputAPNG(
+            new OutputParams(gol.getStateInfo()).setRepeats(APNG.INFINITE_LOOP).setDelay(100, TimeUnit.MILLISECONDS),
+            Utils.cleanCreate("output/benchAPNG.apng"));
+
+        gol.record(oa, 500, true);
+        oa.close();
+
+        System.out.println("APNG benchmark : " + gol.getStats());
+        Utils.createhtmlplayer("output/benchAPNG.html", "benchAPNG.apng");
+    }
+
+    @Test
+    public void benchPNG() throws IOException {
+
+        System.out.println("***** APNG benchmark *****");
+
+        GameOfLife gol = new GameOfLife(500, Rule.Square2D.CONWAY);
+        gol.drawLine(250, 100, 250, 400);
+
+        OutputAdapter oa = new OutputPNG(new OutputParams(gol.getStateInfo()).setBaseFileName("output/benchPNG_@gen@.png"));
+
+        gol.record(oa, 49, true);
+        oa.close();
+
+        System.out.println("PNG benchmark : " + gol.getStats());
+    }
+
+    @Test
+    public void smolTest() throws IOException {
+
+        System.out.println("***** Smol test *****");
+
+        GameOfLife gol = new GameOfLife(3, Rule.Square2D.CONWAY);
+        gol.drawLine(1, 0, 1, 2);
+
+        OutputAdapter oa = new OutputGIF(
+            new OutputParams(gol.getStateInfo()).setRepeats(0).setDelay(250, TimeUnit.MILLISECONDS),
+            Utils.cleanCreate("output/smolTest.gif"));
+
+        gol.record(oa, 10, true);
+        oa.close();
+
+        System.out.println("Smol test : " + gol.getStats());
+        Utils.createhtmlplayer("output/smolTest.html", "smolTest.gif");
     }
 }

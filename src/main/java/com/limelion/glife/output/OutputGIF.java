@@ -13,44 +13,51 @@ package com.limelion.glife.output;
 import com.limelion.glife.utils.Utils;
 import com.madgag.gif.fmsware.AnimatedGifEncoder;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.OutputStream;
 
-public class OutputGIF extends OutputAdaptater {
+/**
+ * Allow encoding multiple generations into a single GIF file.
+ */
+public class OutputGIF extends OutputAdapter {
 
     private AnimatedGifEncoder agife;
 
-    @Override
-    public OutputAdaptater init(OutputInfo oi, File output) throws FileNotFoundException {
+    public OutputGIF(OutputParams op, OutputStream output) {
 
-        return init(oi, new FileOutputStream(output));
-    }
-
-    @Override
-    public OutputAdaptater init(OutputInfo oi, OutputStream output) {
-
-        super.init(oi, output);
+        super(op, output);
         agife = new AnimatedGifEncoder();
-        agife.setDelay(oi.getDelay());
-        agife.setSize(oi.getMetadata().getWidth(), oi.getMetadata().getHeight());
-        agife.setRepeat(oi.getRepeats());
+        agife.setDelay(op.getDelay());
+        agife.setSize(op.getStateInfo().getWidth(), op.getStateInfo().getHeight());
+        agife.setRepeat(op.getRepeats());
+        agife.setQuality(128);
         agife.start(output);
+    }
+
+    public OutputGIF(OutputParams op, File f) throws FileNotFoundException {
+
+        super(op, f);
+        agife = new AnimatedGifEncoder();
+        agife.setDelay(op.getDelay());
+        agife.setSize(op.getStateInfo().getWidth(), op.getStateInfo().getHeight());
+        agife.setRepeat(op.getRepeats());
+        agife.setQuality(128);
+        agife.start(output);
+    }
+
+    @Override
+    public OutputAdapter feed(byte[] data) {
+
+        agife.addFrame(Utils.createGrayImage(data, op.getStateInfo().getWidth(), op.getStateInfo().getHeight()));
         return this;
     }
 
     @Override
-    public OutputAdaptater feed(boolean[][] data) {
-
-        if (isInited())
-            agife.addFrame(Utils.createGrayImage(Utils.bool_to_gray(Utils.align(data)), oi.getMetadata().getWidth(), oi.getMetadata().getHeight()));
-        else
-            throw new IllegalStateException("Please init the OutputAdaptater first !");
-        return this;
-    }
-
-    @Override
-    public void finish() throws IOException {
+    public void close() throws IOException {
 
         agife.finish();
-        super.finish();
+        super.close();
     }
 }

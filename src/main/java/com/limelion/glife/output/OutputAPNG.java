@@ -14,33 +14,39 @@ import com.limelion.glife.utils.Utils;
 import com.vg.apng.APNG;
 import com.vg.apng.Gray;
 
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 
-public class OutputAPNG extends OutputAdaptater {
+/**
+ * Allows encoding multiple generations into a single APNG file.
+ */
+public class OutputAPNG extends OutputAdapter {
 
     private ArrayList<Gray> grays;
 
-    public OutputAPNG() {
+    public OutputAPNG(OutputParams op, OutputStream output) {
 
-        super();
+        super(op, output);
+        grays = new ArrayList<>();
+    }
+
+    public OutputAPNG(OutputParams op, File output) throws FileNotFoundException {
+
+        super(op, new FileOutputStream(output));
         grays = new ArrayList<>();
     }
 
     @Override
-    public OutputAdaptater feed(boolean[][] data) {
+    public OutputAdapter feed(byte[] data) {
 
-        if (isInited())
-            grays.add(new Gray(getInfo().getMetadata().getWidth(), getInfo().getMetadata().getHeight(), Utils.bool_to_gray(Utils.align(data)), oi.getDelay()));
-        else
-            throw new IllegalStateException("Please init the OutputAdaptater first !");
+        grays.add(new Gray(op.getStateInfo().getWidth(), op.getStateInfo().getHeight(), Utils.copy(data), op.getDelay()));
         return this;
     }
 
     @Override
-    public void finish() throws IOException {
+    public void close() throws IOException {
 
-        APNG.write(grays.toArray(new Gray[0]), getOutput(), oi.getRepeats());
-        super.finish();
+        APNG.write(grays.toArray(new Gray[grays.size()]), getOutput(), op.getRepeats());
+        super.close();
     }
 }

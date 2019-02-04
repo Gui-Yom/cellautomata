@@ -10,7 +10,9 @@
 
 package com.limelion.glife.input;
 
+import com.limelion.glife.GameOfLife;
 import com.limelion.glife.Goldata;
+import com.limelion.glife.universe.Universe2D;
 
 import javax.imageio.ImageIO;
 import java.awt.image.Raster;
@@ -69,16 +71,16 @@ public abstract class Input {
      * @throws IOException
      *     if there was an error while reading the stream
      */
-    public static boolean[][] fromIMG(InputStream is) throws IOException {
+    public static byte[] fromIMG(InputStream is) throws IOException {
 
         Raster raster = ImageIO.read(is).getData();
         int width = raster.getWidth();
         int height = raster.getHeight();
-        boolean[][] data = new boolean[width][height];
+        byte[] data = new byte[width * height];
 
         for (int i = 0; i < height; i++)
             for (int j = 0; j < width; j++)
-                data[i][j] = raster.getSample(i, j, 0) == 0;
+                data[i * width + j] = raster.getSample(i, j, 0) == 0 ? GameOfLife.ALIVE : GameOfLife.DEAD;
 
         return data;
     }
@@ -94,7 +96,7 @@ public abstract class Input {
      * @throws IOException
      *     if there was an error while reading the file
      */
-    public static boolean[][] fromIMG(File f) throws IOException {
+    public static byte[] fromIMG(File f) throws IOException {
 
         return fromIMG(new FileInputStream(f));
     }

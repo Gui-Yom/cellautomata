@@ -10,15 +10,14 @@
 
 package com.limelion.glife.output;
 
-import com.limelion.glife.GameOfLife;
-import com.limelion.glife.Metadata;
+import com.limelion.glife.StateInfo;
 
 import java.util.concurrent.TimeUnit;
 
 /**
- * A class holding data about the encoding process.
+ * A class holding data about the encoding process and its parameters.
  */
-public class OutputInfo {
+public class OutputParams {
 
     private int delay;
     private int repeats;
@@ -26,13 +25,14 @@ public class OutputInfo {
     // @gen@ to include generation
     // @n@ to include the img number
     private String baseFileName = null;
-    private Metadata metadata;
 
-    public OutputInfo(GameOfLife gol) {
+    private StateInfo sinf;
+
+    public OutputParams(StateInfo sinf) {
 
         delay = 0;
         repeats = 0;
-        this.metadata = gol.getMetadata();
+        this.sinf = sinf;
     }
 
     public String getBaseFileName() {
@@ -40,15 +40,10 @@ public class OutputInfo {
         return baseFileName;
     }
 
-    public OutputInfo setBaseFileName(String baseFileName) {
+    public OutputParams setBaseFileName(String baseFileName) {
 
         this.baseFileName = baseFileName;
         return this;
-    }
-
-    public Metadata getMetadata() {
-
-        return metadata;
     }
 
     public int getRepeats() {
@@ -56,13 +51,13 @@ public class OutputInfo {
         return repeats;
     }
 
-    public OutputInfo setRepeats(int repeats) {
+    public OutputParams setRepeats(int repeats) {
 
         this.repeats = repeats;
         return this;
     }
 
-    public OutputInfo setDelay(int time, TimeUnit timeUnit) {
+    public OutputParams setDelay(int time, TimeUnit timeUnit) {
 
         delay = (int) TimeUnit.MILLISECONDS.convert(time, timeUnit);
         return this;
@@ -71,6 +66,10 @@ public class OutputInfo {
     public int getDelay() {
 
         return delay;
+    }
+
+    public StateInfo getStateInfo() {
+        return sinf;
     }
 
 }

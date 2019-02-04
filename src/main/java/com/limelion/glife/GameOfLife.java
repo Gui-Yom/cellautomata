@@ -10,10 +10,12 @@
 
 package com.limelion.glife;
 
-import com.limelion.glife.output.OutputAdaptater;
-import com.limelion.glife.universe.UniverseSquare2D;
+import com.limelion.glife.output.OutputAdapter;
+import com.limelion.glife.universe.Universe2D;
+import com.limelion.glife.utils.Utils;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.List;
 
@@ -22,13 +24,17 @@ import java.util.List;
  */
 public class GameOfLife {
 
-    private UniverseSquare2D universe;
-    private Rule rule;
+    // BLACK OVER WHITE
+    public static final byte ALIVE = 0;
+    public static final byte DEAD = (byte) 0xFF;
+
+    private Universe2D universe;
     private Statistics stats;
-    private Metadata meta;
+    private StateInfo sinf;
 
     /**
-     * Create a new GameOfLife with a default universe of 100*100 and the Conway's rule.
+     * Create a new GameOfLife with a default universe of 100*100 and the Conway's rule. The universe borders are not
+     * bounded.
      */
     public GameOfLife() {
 
@@ -39,13 +45,28 @@ public class GameOfLife {
      * Create a new GameOfLife with a square universe and the specified rule.
      *
      * @param square
-     *     the length of a side
+     *     the square parameter
      * @param rule
      *     the rule to use
      */
     public GameOfLife(int square, Rule rule) {
 
         this(square, square, rule);
+    }
+
+    /**
+     * Create a new GameOfLife with a square universe and the specified rule.
+     *
+     * @param square
+     *     the square parameter
+     * @param rule
+     *     the rule to use
+     * @param bound
+     *     specify if the universe borders should be bounded
+     */
+    public GameOfLife(int square, Rule rule, boolean bound) {
+
+        this(square, square, rule, bound);
     }
 
     /**
@@ -60,75 +81,107 @@ public class GameOfLife {
      */
     public GameOfLife(int width, int height, Rule rule) {
 
-        this(new boolean[width][height], rule);
+        this(width, height, rule, false);
     }
 
     /**
-     * Create a new GameOfLife from cells data.
+     * Create a new GameOfLife with a rectangular universe and the specified rule.
+     *
+     * @param width
+     *     the width of the rectangle
+     * @param height
+     *     the height of the rectangle
+     * @param rule
+     *     the rule to use
+     * @param bound
+     *     specify if the universe borders should be bound
+     */
+    public GameOfLife(int width, int height, Rule rule, boolean bound) {
+
+        this(Utils.fill(new byte[width * height], DEAD), width, height, rule, bound);
+    }
+
+    /**
+     * Create a new Game of Life from a base board. The universe borders are not bounded.
      *
      * @param boardData
-     *     the cells data
+     *     the initial data to use
+     * @param width
+     *     the width of the universe
+     * @param height
+     *     the height of the universe
      * @param rule
      *     the rule to use
      */
-    public GameOfLife(boolean[][] boardData, Rule rule) {
+    public GameOfLife(byte[] boardData, int width, int height, Rule rule) {
 
-        this.universe = new UniverseSquare2D(boardData);
-        this.rule = rule;
-        this.stats = new Statistics();
-        this.meta = new Metadata().setWidth(universe.getWidth()).setHeight(universe.getHeight()).setRule(rule.toString());
+        this(boardData, width, height, rule, false);
     }
 
     /**
-     * Create a new GameOfLife from a parsed GLD file.
+     * Create a new Game of Life from a base board.
+     *
+     * @param boardData
+     *     the initial data to use
+     * @param width
+     *     the width of the universe
+     * @param height
+     *     the height of the universe
+     * @param rule
+     *     the rule to use
+     * @param bound
+     *     specify if the universe borders should be bound
+     */
+    public GameOfLife(byte[] boardData, int width, int height, Rule rule, boolean bound) {
+
+        this.universe = new Universe2D(boardData, width, height, rule, bound);
+        this.stats = new Statistics();
+        this.sinf = new StateInfo().setWidth(universe.getWidth()).setHeight(universe.getHeight()).setRule(rule.toString()).setBound(bound);
+    }
+
+    /**
+     * Create a new Game of Life from a parsed GLD file.
      *
      * @param gld
      *     the parsed GLD file
      */
     public GameOfLife(Goldata gld) {
 
-        this.universe = new UniverseSquare2D(gld.getData());
+        this.universe = new Universe2D(
+            gld.getData(),
+            gld.getStateInfo().getWidth(),
+            gld.getStateInfo().getHeight(),
+            Rule.parse(gld.getStateInfo().getRule()),
+            gld.getStateInfo().isBound());
+
         this.stats = new Statistics();
-        this.rule = Rule.parse(gld.getMetadata().getRule());
-        this.meta = gld.getMetadata();
+        this.sinf = gld.getStateInfo();
     }
 
     /**
-     * @return the statistics about the current game
+     * @return the statistics about the current game. Those statistics are only valid for the current generation.
      */
     public Statistics getStats() {
 
-        return stats.setGen(meta.getGen());
+        return stats.setGen(sinf.getGen());
     }
 
     /**
-     * Run a new step. A step is a new computation round over the universe with the given rule.
+     * Evolve to the next generation.
      */
     public void nextGen() {
 
         stats.startRecordTime();
-
-        // TODO better algorithm
-        boolean[][] newUniverse = universe.model();
-
-        for (int i = 0; i < universe.getWidth(); i++)
-            for (int j = 0; j < universe.getHeight(); j++) {
-
-                int neighbours = universe.countNeighbours(i, j);
-
-                if (neighbours > 0)
-                    newUniverse[i][j] = rule.apply(universe.get(i, j), neighbours);
-            }
-        universe = new UniverseSquare2D(newUniverse);
-        meta.incGen();
+        universe.nextGen();
+        sinf.incGen();
         stats.stopRecordTime();
     }
 
     /**
-     * Run {@code n} steps.
+     * Evolve for {@code n} generations.
      *
      * @param n
-     *     the number of steps to run
+     *     the number of generation to evolve
      */
     public void nextGen(int n) {
 
@@ -136,52 +189,80 @@ public class GameOfLife {
             nextGen();
     }
 
-    public void record(List<OutputAdaptater> oal) throws IOException {
+    /**
+     * Record the current generation.
+     *
+     * @param oal
+     *     the list of OutputAdapter to use.
+     *
+     * @throws IOException
+     *     if an OutputAdapter throws one.
+     */
+    public void record(List<OutputAdapter> oal) throws IOException {
 
         stats.startRecordTime();
-        for (OutputAdaptater oa : oal)
+        for (OutputAdapter oa : oal)
             oa.feed(universe.getCells());
         stats.stopRecordTime();
     }
 
-    public void record(OutputAdaptater oa) throws IOException {
+    /**
+     * Record the current generation.
+     *
+     * @param oa
+     *     the OutputAdapter to use
+     *
+     * @throws IOException
+     *     if the OutputAdapter throws one
+     */
+    public void record(OutputAdapter oa) throws IOException {
 
         record(Collections.singletonList(oa));
     }
 
     /**
-     * Record the state after the next state.
+     * Record the next generation.
      *
      * @param oal
-     *     the output adaptater to use to record
+     *     the list of OutputAdapter to use.
      *
      * @throws IOException
+     *     if an OutputAdapter throws one.
      */
-    public void recordNext(List<OutputAdaptater> oal) throws IOException {
+    public void recordNext(List<OutputAdapter> oal) throws IOException {
 
         nextGen();
         record(oal);
     }
 
-    public void recordNext(OutputAdaptater oa) throws IOException {
+    /**
+     * Record the next generation.
+     *
+     * @param oa
+     *     the OutputAdapter to use
+     *
+     * @throws IOException
+     *     if the OutputAdapter throws one
+     */
+    public void recordNext(OutputAdapter oa) throws IOException {
 
         nextGen();
         record(oa);
     }
 
     /**
-     * Record {@code n} steps, including the current or not.
+     * Record {@code n} generation, plus the current one (or not).
      *
      * @param oal
-     *     the output adaptater to use to record
+     *     the list of OutputAdapter to use
      * @param n
-     *     the number of steps to record
+     *     the number of generation to record
      * @param doRecordCurrent
      *     whether to record the current step
      *
-     * @throws IOException
+     * @throws IOException if the OutputAdapter throws one
      */
-    public void recordGen(List<OutputAdaptater> oal, int n, boolean doRecordCurrent) throws IOException {
+    public void record(List<OutputAdapter> oal, int n, boolean doRecordCurrent) throws IOException {
 
         if (doRecordCurrent)
             record(oal);
@@ -189,7 +270,19 @@ public class GameOfLife {
             recordNext(oal);
     }
 
-    public void recordGen(OutputAdaptater oa, int n, boolean doRecordCurrent) throws IOException {
+    /**
+     * Record {@code n} generation, plus the current one (or not).
+     *
+     * @param oa
+     *     the OutputAdapter to use
+     * @param n
+     *     the number of generation to record
+     * @param doRecordCurrent
+     *     whether to record the current step
+     *
+     * @throws IOException if the OutputAdapter throws one
+     */
+    public void record(OutputAdapter oa, int n, boolean doRecordCurrent) throws IOException {
 
         if (doRecordCurrent)
             record(oa);
@@ -198,16 +291,35 @@ public class GameOfLife {
     }
 
     /**
-     * @return this game metadata
+     * @return this Game of Life StateInfo.
      */
-    public Metadata getMetadata() {
+    public StateInfo getStateInfo() {
 
-        return meta;
+        return sinf;
     }
 
+    /**
+     * Draw a straight line between two points.
+     *
+     * @param x1
+     * @param y1
+     * @param x2
+     * @param y2
+     */
     public void drawLine(int x1, int y1, int x2, int y2) {
 
         universe.drawLine(x1, y1, x2, y2);
+    }
+
+    /**
+     * Make the cell at the given coordinates alive.
+     *
+     * @param x
+     * @param y
+     */
+    public void setCell(int x, int y) {
+
+        universe.set(x, y, ALIVE);
     }
 
     /**
@@ -259,7 +371,14 @@ public class GameOfLife {
         @Override
         public String toString() {
 
-            return String.format("Compute time : %d ms. Ran %d steps on %d cells. Currently alive cells : %d.", elapsedTime, gen, cellCount(), getAliveCells());
+            double speed = gen * 1000 / (double) elapsedTime;
+            return String.format("Alive cells : %d. Compute time : %d ms. Ran %d steps on %d cells. Speed : %s gen/s. Performance : %s",
+                                 getAliveCells(),
+                                 elapsedTime,
+                                 gen,
+                                 cellCount(),
+                                 new DecimalFormat("#.##").format(speed),
+                                 new DecimalFormat("#.##").format(gen * cellCount() / Math.pow((double) elapsedTime, 2)));
         }
     }
 }

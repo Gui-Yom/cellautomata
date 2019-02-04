@@ -12,70 +12,50 @@ package com.limelion.glife.output;
 
 import java.io.*;
 
-public abstract class OutputAdaptater {
+/**
+ * Represent a way to record a generation.
+ */
+public abstract class OutputAdapter implements Closeable {
 
     protected OutputStream output = null;
-    protected OutputInfo oi = null;
+    protected OutputParams op = null;
 
-    protected boolean inited = false;
-    protected boolean finished = false;
+    protected boolean isClosed = false;
 
-    public OutputAdaptater(OutputInfo oi, OutputStream output) {
+    public OutputAdapter(OutputParams op, OutputStream output) {
 
-        init(oi, output);
-    }
+        if (output == null)
+            throw new IllegalArgumentException("OutputStream cannot be null");
 
-    public OutputAdaptater(OutputInfo oi, File f) throws FileNotFoundException {
-
-        this(oi, new FileOutputStream(f));
-    }
-
-    public OutputAdaptater(OutputInfo oi) {
-
-        init(oi);
-    }
-
-    protected OutputAdaptater() {
-
-    }
-
-    public boolean isInited() {
-
-        return inited;
-    }
-
-    public boolean isFinished() {
-
-        return finished;
-    }
-
-    public OutputAdaptater init(OutputInfo oi, OutputStream output) {
-
+        this.op = op;
         this.output = output;
-        this.oi = oi;
-        this.inited = true;
-        return this;
     }
 
-    public OutputAdaptater init(OutputInfo oi, File f) throws FileNotFoundException {
+    public OutputAdapter(OutputParams op, File f) throws FileNotFoundException {
 
-        return init(oi, new FileOutputStream(f));
+        this(op, new FileOutputStream(f));
     }
 
-    public OutputAdaptater init(OutputInfo oi) {
+    public OutputAdapter(OutputParams op) {
 
-        this.oi = oi;
-        this.inited = true;
-        return this;
+        this.op = op;
+        // The output stream will be built in the feed(byte[]) implementation
+        // making it possible to handle multiple files
     }
 
-    public abstract OutputAdaptater feed(boolean[][] data) throws IOException;
+    public boolean isClosed() {
 
-    public void finish() throws IOException {
+        return isClosed;
+    }
+
+    public abstract OutputAdapter feed(byte[] data) throws IOException;
+
+    @Override
+    public void close() throws IOException {
 
         if (output != null)
             output.close();
-        this.finished = true;
+        this.isClosed = true;
     }
 
     public OutputStream getOutput() {
@@ -83,8 +63,8 @@ public abstract class OutputAdaptater {
         return output;
     }
 
-    public OutputInfo getInfo() {
+    public OutputParams getOutputInfo() {
 
-        return oi;
+        return op;
     }
 }

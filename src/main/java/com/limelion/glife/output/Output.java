@@ -11,23 +11,26 @@
 package com.limelion.glife.output;
 
 /**
- * Specify the format to encode the output. Get the encoder implementation with {@code OutputType.getImpl()}.
+ * Specify the format to encode the output.
  */
-public enum OutputType {
-    PNG,
-    BMP,
+public enum Output {
     APNG,
+    BMP,
     GIF,
-    GLD;
+    GLD,
+    PNG;
 
     public String getFileExtension() {
+
         return "." + this.name().toLowerCase();
     }
 
     /**
-     * @return if the format is an animated one. WARNING : an apng file is a valid png file but here we differentiate them
+     * @return if the format is an animated one. WARNING : an apng file is a valid png file but here we differentiate
+     * them
      */
     public boolean isAnimated() {
+
         switch (this) {
 
             case GIF:
@@ -39,26 +42,6 @@ public enum OutputType {
             case GLD:
             default:
                 return false;
-        }
-    }
-
-    /**
-     * @return an initialized encoder implementation fo the given format.
-     */
-    public OutputAdaptater getImpl() {
-        switch (this) {
-            case PNG:
-                return new OutputPNG();
-            case BMP:
-                return new OutputBMP();
-            case APNG:
-                return new OutputAPNG();
-            case GIF:
-                return new OutputGIF();
-            case GLD:
-                return new OutputGLD();
-            default:
-                return null;
         }
     }
 }

@@ -12,20 +12,36 @@ package com.limelion.glife.output;
 
 import com.limelion.glife.Goldata;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.OutputStream;
 
-public class OutputGLD extends OutputAdaptater {
+/**
+ * Allows encoding a complete Game of Life state in a GLD file.
+ * The GLD format holds all the information to completely save the current compute state and restore it later.
+ */
+public class OutputGLD extends OutputAdapter {
+
+    public OutputGLD(OutputParams op, OutputStream output) {
+
+        super(op, output);
+    }
+
+    public OutputGLD(OutputParams op, File f) throws FileNotFoundException {
+
+        super(op, f);
+    }
+
+    public OutputGLD(OutputParams op) {
+
+        super(op);
+    }
 
     @Override
-    public OutputAdaptater feed(boolean[][] data) throws IOException {
+    public OutputAdapter feed(byte[] data) throws IOException {
 
-        if (isInited()) {
-
-            Goldata.create(oi.getMetadata(), data).write(output);
-
-        } else
-            throw new IllegalStateException("Please init the OutputAdaptater first !");
-
+        Goldata.create(op.getStateInfo(), data).write(output);
         return this;
     }
 }

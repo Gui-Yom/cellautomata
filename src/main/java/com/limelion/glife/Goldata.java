@@ -24,24 +24,25 @@ import java.util.zip.ZipException;
 
 /**
  * Represents the file format to save the current game instance.
+ * It holds enough information to completely save the computation state and restore it later.
  */
 public class Goldata {
 
     public static byte[] MAGIC = new byte[] { 0x47, 0x4C, 0x44 };
-    public static byte VERSION = 0x02;
+    public static byte VERSION = 0x03;
 
-    private Metadata metad;
-    private boolean[][] data;
+    private StateInfo sinf;
+    private byte[] data;
 
-    private Goldata(Metadata m, boolean[][] data) {
+    private Goldata(StateInfo sinf, byte[] data) {
 
-        this.metad = m;
+        this.sinf = sinf;
         this.data = data;
     }
 
-    public static Goldata create(Metadata metad, boolean[][] data) {
+    public static Goldata create(StateInfo sinf, byte[] data) {
 
-        return new Goldata(metad, data);
+        return new Goldata(sinf, data);
     }
 
     public static Goldata parse(InputStream is) throws IOException {
@@ -74,20 +75,15 @@ public class Goldata {
                 if (decomp != data.length)
                     throw new ZipException("Failed to decompress data correctly.");
 
-                // Final data
-                boolean[][] boardData = new boolean[width][height];
+                return Goldata.create(new StateInfo().setWidth(width).setHeight(height), data);
 
-                for (int i = 0; i < width; i++)
-                    for (int j = 0; j < height; j++)
-                        boardData[i][j] = data[i * height + j] == 0;
-
-                return Goldata.create(new Metadata().setWidth(width).setHeight(height), boardData);
+            case 0x03:
             case 0x02:
 
                 byte[] serialized = new byte[buf.getInt()];
                 buf.get(serialized, 0, serialized.length);
-                Metadata m = Metadata.deserialize(serialized);
-                data = new byte[m.getWidth() * m.getHeight()];
+                StateInfo sinf = StateInfo.deserialize(serialized);
+                data = new byte[sinf.getWidth() * sinf.getHeight()];
 
                 // First pass
                 inflater = new Inflater();
@@ -105,14 +101,8 @@ public class Goldata {
                 if (decomp != data.length)
                     throw new ZipException("Failed to decompress data correctly.");
 
-                // Final data
-                boardData = new boolean[m.getWidth()][m.getHeight()];
+                return Goldata.create(sinf, data);
 
-                for (int i = 0; i < m.getWidth(); i++)
-                    for (int j = 0; j < m.getHeight(); j++)
-                        boardData[i][j] = data[i * m.getHeight() + j] == 0;
-
-                return Goldata.create(m, boardData);
             default:
                 return null;
         }
@@ -122,16 +112,16 @@ public class Goldata {
 
         os.write(MAGIC);
         os.write(VERSION);
-        byte[] serialized = metad.serialize();
+        byte[] serialized = sinf.serialize();
         os.write(Utils.itoba(serialized.length));
         os.write(serialized);
 
         // Zip compress board data
         Deflater deflater = new Deflater(Deflater.BEST_COMPRESSION);
-        deflater.setInput(Utils.bool_to_gray(Utils.align(data)));
+        deflater.setInput(data);
         deflater.finish();
 
-        byte[] buf = new byte[metad.getHeight() * metad.getWidth()];
+        byte[] buf = new byte[sinf.getHeight() * sinf.getWidth()];
         int comp = deflater.deflate(buf);
         deflater.end();
 
@@ -142,14 +132,14 @@ public class Goldata {
         os.write(buf, 0, comp);
     }
 
-    public boolean[][] getData() {
+    public byte[] getData() {
 
         return data;
     }
 
-    public Metadata getMetadata() {
+    public StateInfo getStateInfo() {
 
-        return metad;
+        return sinf;
     }
 
 }
