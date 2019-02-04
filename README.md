@@ -29,11 +29,15 @@ Then declare the following dependency :
 <dependency>
     <groupId>com.github.LimeiloN</groupId>
 	<artifactId>glife-lib</artifactId>
-	<version>1.0.0</version>
+	<version>tag</version>
 </dependency>
 ```
+
+### Contributing
+Easy ! See [CONTRIBUTING.md][contributing]
 
 [wikipedia_gol]: https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life
 [example_gif]: output.gif "Example"
 [jitpack-badge]: https://jitpack.io/v/LimeiloN/game-of-life.svg "jitpack badge"
 [jitpack-url]: https://jitpack.io/#LimeiloN/game-of-life
+[contributing]: https://github.com/LimeiloN/glife-lib/blob/master/CONTRIBUTING.md
