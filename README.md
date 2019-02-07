@@ -20,7 +20,9 @@ Here's an example of what can be achieved :
 ### Library usage
 [![Release][jitpack-badge]][jitpack-url]
 
-Add the JitPack repository to your buildfile (example shows Maven) :
+Add the JitPack repository to your buildfile :
+
+Maven :
 ```xml
 <repositories>
 	<repository>
@@ -28,14 +30,27 @@ Add the JitPack repository to your buildfile (example shows Maven) :
 	    <url>https://jitpack.io</url>
 	</repository>
 </repositories>
+
+<dependencies>
+    <dependency>
+        <groupId>com.github.LimeiloN</groupId>
+	    <artifactId>glife-lib</artifactId>
+	    <version>tag</version>
+    </dependency>
+</dependencies>
 ```
-Then declare the following dependency :
-```xml
-<dependency>
-    <groupId>com.github.LimeiloN</groupId>
-	<artifactId>glife-lib</artifactId>
-	<version>tag</version>
-</dependency>
+
+Gradle :
+```groovy
+repositories {
+    maven {
+        url "https://jitpack.io"
+    }
+}
+
+dependencies {
+    implementation "com.github.LimeiloN:glife-lib:1.1.0"
+}
 ```
 
 ### Contributing
