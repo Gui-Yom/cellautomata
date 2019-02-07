@@ -20,6 +20,24 @@ public enum Output {
     GLD,
     PNG;
 
+    public static Output parse(String raw) {
+
+        switch (raw.toLowerCase()) {
+            case "apng":
+                return APNG;
+            case "bmp":
+                return BMP;
+            case "gif":
+                return GIF;
+            case "gld":
+                return GLD;
+            case "png":
+                return PNG;
+            default:
+                return null;
+        }
+    }
+
     public String getFileExtension() {
 
         return "." + this.name().toLowerCase();

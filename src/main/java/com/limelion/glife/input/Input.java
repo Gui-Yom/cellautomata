@@ -15,11 +15,9 @@ import com.limelion.glife.Goldata;
 import com.limelion.glife.universe.Universe2D;
 
 import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 
 /**
  * A convenience class to regroup the available input methods.
@@ -71,18 +69,9 @@ public abstract class Input {
      * @throws IOException
      *     if there was an error while reading the stream
      */
-    public static byte[] fromIMG(InputStream is) throws IOException {
+    public static byte[] fromImage(InputStream is) throws IOException {
 
-        Raster raster = ImageIO.read(is).getData();
-        int width = raster.getWidth();
-        int height = raster.getHeight();
-        byte[] data = new byte[width * height];
-
-        for (int i = 0; i < height; i++)
-            for (int j = 0; j < width; j++)
-                data[i * width + j] = raster.getSample(i, j, 0) == 0 ? GameOfLife.ALIVE : GameOfLife.DEAD;
-
-        return data;
+        return fromImage(ImageIO.read(is));
     }
 
     /**
@@ -96,8 +85,33 @@ public abstract class Input {
      * @throws IOException
      *     if there was an error while reading the file
      */
-    public static byte[] fromIMG(File f) throws IOException {
+    public static byte[] fromImage(File f) throws IOException {
 
-        return fromIMG(new FileInputStream(f));
+        return fromImage(new FileInputStream(f));
+    }
+
+    /**
+     * Read an image from
+     * @param buf
+     * @return
+     * @throws IOException
+     */
+    public static byte[] fromImage(byte[] buf) throws IOException {
+
+        return fromImage(new ByteArrayInputStream(buf));
+    }
+
+    public static byte[] fromImage(BufferedImage bi) {
+
+        Raster raster = bi.getData();
+        int width = raster.getWidth();
+        int height = raster.getHeight();
+        byte[] data = new byte[width * height];
+
+        for (int i = 0; i < width; i++)
+            for (int j = 0; j < height; j++)
+                data[i * width + j] = raster.getSample(i, j, 0) == 0 ? GameOfLife.ALIVE : GameOfLife.DEAD;
+
+        return data;
     }
 }
