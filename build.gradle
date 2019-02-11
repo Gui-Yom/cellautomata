@@ -36,6 +36,12 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
     from javadoc.destinationDir
 }
 
+jar {
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
 task buildPackage(type: DefaultTask) {
     dependsOn jar
     dependsOn sourcesJar
