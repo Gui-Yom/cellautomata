@@ -77,6 +77,13 @@ public class GameOfLifeTest {
         Assert.assertArrayEquals(gld1, gld2);
 
         System.out.println("Files are similar. OK");
+
+        GameOfLife gol3 = new GameOfLife(20, 22, Rule.Square2D.CONWAY);
+
+        gol3.drawLine(5, 10, 15, 10);
+
+        gol.nextGen(50);
+
         System.out.println("***** End of general tests *****");
     }
 

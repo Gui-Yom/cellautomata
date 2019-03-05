@@ -49,7 +49,7 @@ repositories {
 }
 
 dependencies {
-    implementation "com.github.LimeiloN:glife-lib:1.1.0"
+    implementation "com.github.LimeiloN:glife-lib:tag"
 }
 ```
 

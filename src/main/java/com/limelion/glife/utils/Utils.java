@@ -25,9 +25,9 @@ public class Utils {
 
     /**
      * Cleanly create a File from a path. e.g. checks if it exists and/or if the parent directory exists.
-     * @param path
-     * @return
-     * @throws IOException
+     * @param path where to create the new file
+     * @return the File just created
+     * @throws IOException if the file manipulations failed
      */
     public static File cleanCreate(String path) throws IOException {
 
@@ -57,6 +57,11 @@ public class Utils {
                                  null);
     }
 
+    /**
+     * Serialize an int to a new byte array
+     * @param i the int to serialize
+     * @return a new byte array containing the serialized int
+     */
     public static byte[] itoba(int i) {
 
         return ByteBuffer.allocate(4).order(ByteOrder.BIG_ENDIAN).putInt(i).array();
@@ -81,7 +86,7 @@ public class Utils {
      * Read all bytes from the given InputStream.
      * @param is the InputStream to read
      * @return an array containing all bytes.
-     * @throws IOException
+     * @throws IOException if it failed reading the stream
      */
     public static byte[] readAllBytes(InputStream is) throws IOException {
 

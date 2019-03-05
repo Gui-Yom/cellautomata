@@ -295,7 +295,7 @@ public class GameOfLife {
      */
     public StateInfo getStateInfo() {
 
-        return sinf;
+        return new StateInfo(sinf);
     }
 
     /**
@@ -313,13 +313,44 @@ public class GameOfLife {
 
     /**
      * Make the cell at the given coordinates alive.
-     *
-     * @param x
-     * @param y
      */
     public void setCell(int x, int y) {
 
         universe.set(x, y, ALIVE);
+    }
+
+    /**
+     * @return the current working universe
+     */
+    public Universe2D getUniverse() {
+
+        return universe;
+    }
+
+    /**
+     * @return a copy of the universe data
+     */
+    public byte[] dataCopy() {
+
+        return Utils.copy(universe.getCells());
+    }
+
+    /**
+     * Set the creator for this Game of Life instance
+     * @param creator the creator to put in records
+     */
+    public void setCreator(String creator) {
+
+        sinf.setCreator(creator);
+    }
+
+    /**
+     * Set the comment for this Game of Life instance
+     * @param comment the comment to put in records
+     */
+    public void setComment(String comment) {
+
+        sinf.setComment(comment);
     }
 
     /**

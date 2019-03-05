@@ -92,9 +92,9 @@ public abstract class Input {
 
     /**
      * Read an image from
-     * @param buf
-     * @return
-     * @throws IOException
+     * @param buf the array containing the image to read
+     * @return the universe data from this image
+     * @throws IOException if an error occurs while reading the stream
      */
     public static byte[] fromImage(byte[] buf) throws IOException {
 

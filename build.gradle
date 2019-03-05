@@ -17,7 +17,7 @@ dependencies {
 }
 
 group = "com.limelion"
-version = "1.1.1"
+version = "1.2.0"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -36,14 +36,14 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
     from javadoc.destinationDir
 }
 
-jar {
+task fatjar(type: Jar) {
     from {
         configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
     }
 }
 
 task buildPackage(type: DefaultTask) {
-    dependsOn jar
+    dependsOn fatjar
     dependsOn sourcesJar
     dependsOn javadocJar
 }

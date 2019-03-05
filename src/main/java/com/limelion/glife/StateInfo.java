@@ -42,6 +42,17 @@ public class StateInfo {
         comment = "";
     }
 
+    public StateInfo(StateInfo sinf) {
+
+        width = sinf.getWidth();
+        height = sinf.getHeight();
+        rule = sinf.getRule();
+        gen = sinf.getGen();
+        bound = sinf.isBound();
+        creator = sinf.getCreator();
+        comment = sinf.getComment();
+    }
+
     public static byte[] serialize(StateInfo m) {
 
         byte[] ruleDesc = Utils.strtoba(m.rule);
@@ -93,7 +104,7 @@ public class StateInfo {
         return bound;
     }
 
-    StateInfo setBound(boolean bound) {
+    public StateInfo setBound(boolean bound) {
 
         this.bound = bound;
         return this;
@@ -126,7 +137,7 @@ public class StateInfo {
         return width;
     }
 
-    StateInfo setWidth(int width) {
+    public StateInfo setWidth(int width) {
 
         this.width = width;
         return this;
@@ -137,7 +148,7 @@ public class StateInfo {
         return height;
     }
 
-    StateInfo setHeight(int height) {
+    public StateInfo setHeight(int height) {
 
         this.height = height;
         return this;
@@ -148,13 +159,13 @@ public class StateInfo {
         return gen;
     }
 
-    StateInfo setGen(int gen) {
+    public StateInfo setGen(int gen) {
 
         this.gen = gen;
         return this;
     }
 
-    StateInfo incGen() {
+    public StateInfo incGen() {
 
         gen++;
         return this;
@@ -165,7 +176,7 @@ public class StateInfo {
         return rule;
     }
 
-    StateInfo setRule(String rule) {
+    public StateInfo setRule(String rule) {
 
         this.rule = rule;
         return this;
