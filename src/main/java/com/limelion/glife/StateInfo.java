@@ -15,7 +15,6 @@ import com.limelion.glife.utils.Utils;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
 
 /**
  * A convenience class to exchange data
@@ -60,14 +59,14 @@ public class StateInfo {
         byte[] comment = Utils.strtoba(m.comment);
         // Total length : 4 + 4 + 4 + (4 + str) + 1 + 8 + (4 + str) + (4 + str) >= 25
         return ByteBuffer.allocate(4 + 4 + 4 + 4 + ruleDesc.length + 1 + 4 + creator.length + 4 + comment.length).order(ByteOrder.BIG_ENDIAN)
-                         .putInt(m.width)
-                         .putInt(m.height)
-                         .putInt(m.gen)
-                         .put(ruleDesc)
-                         .put((byte) (m.bound ? 1 : 0))
-                         .put(creator)
-                         .put(comment)
-                         .array();
+                   .putInt(m.width)
+                   .putInt(m.height)
+                   .putInt(m.gen)
+                   .put(ruleDesc)
+                   .put((byte) (m.bound ? 1 : 0))
+                   .put(creator)
+                   .put(comment)
+                   .array();
     }
 
     public static StateInfo deserialize(byte[] serialized) {
@@ -75,9 +74,9 @@ public class StateInfo {
         if (serialized != null && serialized.length >= 25) {
             ByteBuffer buf = ByteBuffer.wrap(serialized).order(ByteOrder.BIG_ENDIAN);
             StateInfo sinf = new StateInfo()
-                .setWidth(buf.getInt())
-                .setHeight(buf.getInt())
-                .setGen(buf.getInt());
+                                 .setWidth(buf.getInt())
+                                 .setHeight(buf.getInt())
+                                 .setGen(buf.getInt());
 
             byte[] rule = new byte[buf.getInt()];
             buf.get(rule, 0, rule.length);

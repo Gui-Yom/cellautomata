@@ -11,7 +11,7 @@
 package com.limelion.glife.utils;
 
 @FunctionalInterface
-public interface TriConsumerVoid<T, U, V> {
+public interface TriConsumer<T, U, V> {
 
     void func(T t, U u, V v);
 }

@@ -43,11 +43,8 @@ public interface Rule {
     /**
      * Given the current state, get the state for the next generation.
      *
-     * @param cell
-     *     the current state of the cell
-     * @param nCount
-     *     the neighbours count
-     *
+     * @param cell   the current state of the cell
+     * @param nCount the neighbours count
      * @return the next state of the cell
      */
     boolean apply(byte cell, int nCount);

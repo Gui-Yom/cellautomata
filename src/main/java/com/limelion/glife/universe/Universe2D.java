@@ -2,23 +2,18 @@ package com.limelion.glife.universe;
 
 import com.limelion.glife.GameOfLife;
 import com.limelion.glife.Rule;
-import com.limelion.glife.utils.TriConsumerVoid;
+import com.limelion.glife.utils.TriConsumer;
 
 /**
  * Represents a classic 2D Square universe.
  */
 public class Universe2D {
 
-    // We keep to arrays in memory so that we do not need to reallocate one each time
-    private final byte[] cells;
-    private final byte[] cells2;
-
     private final int width;
     private final int height;
-    // Tells if we're in an even or odd generation (for array swapping)
-    // if (even) : read from cells write to cells2
-    // if (!even) : read from cells2 write to cells
-    private boolean even = true;
+    // We keep to arrays in memory so that we do not need to reallocate one each time
+    private byte[] read;
+    private byte[] write;
     // The right side is bound to the left, same with bottom and top
     private boolean bound = false;
 
@@ -46,8 +41,8 @@ public class Universe2D {
         this.width = width;
         this.height = height;
 
-        this.cells = seed;
-        this.cells2 = model();
+        this.read = seed;
+        this.write = model();
 
         this.rule = r;
 
@@ -71,7 +66,7 @@ public class Universe2D {
 
     public byte[] getCells() {
 
-        return even ? cells : cells2;
+        return read;
     }
 
     public long cellCount() {
@@ -79,19 +74,14 @@ public class Universe2D {
         return width * height;
     }
 
+    // TODO parallelize
     public long alive() {
 
         long count = 0;
 
-        if (even) {
-            for (int i = 0; i < cells.length; i++)
-                if (cells[i] == GameOfLife.ALIVE)
-                    count++;
-        } else {
-            for (int i = 0; i < cells2.length; i++)
-                if (cells2[i] == GameOfLife.ALIVE)
-                    count++;
-        }
+        for (int i = 0; i < read.length; ++i)
+            if (read[i] == GameOfLife.ALIVE)
+                ++count;
         return count;
     }
 
@@ -110,7 +100,7 @@ public class Universe2D {
         if (x < 0 || x >= width || y < 0 || y >= height)
             return GameOfLife.DEAD;
 
-        return even ? cells[x * width + y] : cells2[x * width + y];
+        return read[x * width + y];
     }
 
     public byte get(int index) {
@@ -128,10 +118,7 @@ public class Universe2D {
         if (x < 0 || x >= width || y < 0 || y >= height)
             throw new IllegalArgumentException("Coordinates not in bounds !");
 
-        if (even)
-            cells2[x * width + y] = value;
-        else
-            cells[x * width + y] = value;
+        write[x * width + y] = value;
     }
 
     public void set(int index, byte value) {
@@ -140,11 +127,11 @@ public class Universe2D {
     }
 
     public void nextGen() {
-        // TODO nice algo
-        for (int i = 0; i < width; i++)
-            for (int j = 0; j < height; j++)
+        // TODO parallelize task
+        for (int i = 0; i < width; ++i)
+            for (int j = 0; j < height; ++j)
                 set(i, j, rule.apply(get(i, j), countNeighbours(i, j)) ? GameOfLife.ALIVE : GameOfLife.DEAD);
-        even = !even;
+        swapBuffers();
     }
 
     /**
@@ -152,40 +139,43 @@ public class Universe2D {
      *
      * @param x
      * @param y
-     *
      * @return the number of alive neighbours
      */
     public int countNeighbours(int x, int y) {
 
         int count = 0;
 
-        for (int i = -1; i <= 1; i++)
-            for (int j = -1; j <= 1; j++)
+        for (int i = -1; i <= 1; ++i)
+            for (int j = -1; j <= 1; ++j)
                 if (i != 0 || j != 0)
                     if (get(x + i, y + j) == GameOfLife.ALIVE)
-                        count++;
+                        ++count;
 
         // count <= 8
         return count;
+    }
+
+    private void swapBuffers() {
+
+        byte[] temp = read;
+        read = write;
+        write = temp;
     }
 
     public void drawLine(int x1, int y1, int x2, int y2) {
 
         int distance = Math.max(Math.abs(x2 - x1), Math.abs(y2 - y1));
 
-        for (int i = 0; i <= distance; i++) {
+        for (int i = 0; i <= distance; ++i) {
             double t = distance == 0 ? 0.0 : (double) i / distance;
-            if (even)
-                cells[(int) (Math.round(x1 + t * (x2 - x1)) * width + Math.round(y1 + t * (y2 - y1)))] = GameOfLife.ALIVE;
-            else
-                cells2[(int) (Math.round(x1 + t * (x2 - x1)) * width + Math.round(y1 + t * (y2 - y1)))] = GameOfLife.ALIVE;
+            read[(int) (Math.round(x1 + t * (x2 - x1)) * width + Math.round(y1 + t * (y2 - y1)))] = GameOfLife.ALIVE;
         }
     }
 
-    public void forEachCell(TriConsumerVoid<Byte, Integer, Integer> action) {
+    public void forEachCell(TriConsumer<Byte, Integer, Integer> action) {
 
-        for (int i = 0; i < getWidth(); i++)
-            for (int j = 0; j < getHeight(); j++)
+        for (int i = 0; i < getWidth(); ++i)
+            for (int j = 0; j < getHeight(); ++j)
                 action.func(get(i, j), i, j);
     }
 

@@ -1,56 +1,77 @@
 plugins {
-    id 'java-library'
-    id 'maven'
+    id "java-library"
+    id "maven-publish"
+    id "com.dua3.gradle.jpms" version "1.0-BETA7"
 }
 
 repositories {
     mavenCentral()
-    maven {
-        url 'https://jitpack.io'
+    maven { // Jitpack repo
+        url "https://jitpack.io"
     }
 }
 
 dependencies {
-    implementation 'com.madgag:animated-gif-lib:1.4'
-    implementation 'com.github.zhuker:apng4j:0c4ded26b0'
-    testImplementation 'junit:junit:4.12'
+    implementation "com.madgag:animated-gif-lib:1.4"
+    implementation "com.github.LimeiloN:apng4j:1.0.0"
+
+    testImplementation "org.junit.jupiter:junit-jupiter-api:5.5.2"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.5.2"
 }
 
-group = "com.limelion"
-version = "1.2.0"
+group "com.github.LimeiloN"
+version "1.3.0"
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = 11
+targetCompatibility = 11
+
+java {
+    withSourcesJar()
+    withJavadocJar()
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            pom {
+                name = "glife-lib"
+                description "Compute game of life rounds into images"
+                url = "https://github.com/LimeiloN/glife-lib"
+                licenses {
+                    license {
+                        name = "MIT License"
+                        url = "https://github.com/LimeiloN/glife-lib/blob/master/LICENSE"
+                    }
+                }
+                developers {
+                    developer {
+                        id = "LimeiloN"
+                        name = "Guillaume Anthouard"
+                    }
+                }
+                scm {
+                    connection = "scm:git:git://github.com/LimeiloN/glife-lib.git"
+                    developerConnection = "scm:git:ssh://github.com/LimeiloN/glife-lib.git"
+                    url = "https://github.com/LimeiloN/glife-lib/"
+                }
+            }
+        }
+    }
+}
 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 
-task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = "sources"
-    from sourceSets.main.allJava
+jigsaw {
+    module "com.limelion.glife"
+    testLibraryModule "org.junit.jupiter.api"
+    multiRelease = true
 }
 
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = "javadoc"
-    from javadoc.destinationDir
-}
-
-task fatjar(type: Jar) {
-    from {
-        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
-    }
-}
-
-task buildPackage(type: DefaultTask) {
-    dependsOn fatjar
-    dependsOn sourcesJar
-    dependsOn javadocJar
-}
-
-artifacts {
-    archives javadocJar
-    archives sourcesJar
+test {
+    useJUnitPlatform()
 }
 
 clean.doFirst {

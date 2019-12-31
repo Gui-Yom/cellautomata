@@ -12,7 +12,6 @@ package com.limelion.glife.input;
 
 import com.limelion.glife.GameOfLife;
 import com.limelion.glife.Goldata;
-import com.limelion.glife.universe.Universe2D;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -27,13 +26,9 @@ public abstract class Input {
     /**
      * Read a GLD from the specified stream
      *
-     * @param input
-     *     the InputStream to read from
-     *
+     * @param input the InputStream to read from
      * @return the parsed GLD
-     *
-     * @throws IOException
-     *     if there was an error while reading the stream
+     * @throws IOException if there was an error while reading the stream
      * @see Goldata
      */
     public static Goldata fromGLD(InputStream input) throws IOException {
@@ -44,13 +39,9 @@ public abstract class Input {
     /**
      * Read a GLD file
      *
-     * @param f
-     *     the file to read the GLD from
-     *
+     * @param f the file to read the GLD from
      * @return the parsed GLD
-     *
-     * @throws IOException
-     *     if there was an error while reading the file
+     * @throws IOException if there was an error while reading the file
      * @see Goldata
      */
     public static Goldata fromGLD(File f) throws IOException {
@@ -61,13 +52,9 @@ public abstract class Input {
     /**
      * Work with either PNG or BMP
      *
-     * @param is
-     *     the InputStream to read the image from
-     *
+     * @param is the InputStream to read the image from
      * @return the cell data contained in the image
-     *
-     * @throws IOException
-     *     if there was an error while reading the stream
+     * @throws IOException if there was an error while reading the stream
      */
     public static byte[] fromImage(InputStream is) throws IOException {
 
@@ -77,13 +64,9 @@ public abstract class Input {
     /**
      * Work with either PNG or BMP
      *
-     * @param f
-     *     the File to read the image from
-     *
+     * @param f the File to read the image from
      * @return the cell data contained in the image
-     *
-     * @throws IOException
-     *     if there was an error while reading the file
+     * @throws IOException if there was an error while reading the file
      */
     public static byte[] fromImage(File f) throws IOException {
 
@@ -92,6 +75,7 @@ public abstract class Input {
 
     /**
      * Read an image from
+     *
      * @param buf the array containing the image to read
      * @return the universe data from this image
      * @throws IOException if an error occurs while reading the stream

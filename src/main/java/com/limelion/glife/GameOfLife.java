@@ -44,10 +44,8 @@ public class GameOfLife {
     /**
      * Create a new GameOfLife with a square universe and the specified rule.
      *
-     * @param square
-     *     the square parameter
-     * @param rule
-     *     the rule to use
+     * @param square the square parameter
+     * @param rule   the rule to use
      */
     public GameOfLife(int square, Rule rule) {
 
@@ -57,12 +55,9 @@ public class GameOfLife {
     /**
      * Create a new GameOfLife with a square universe and the specified rule.
      *
-     * @param square
-     *     the square parameter
-     * @param rule
-     *     the rule to use
-     * @param bound
-     *     specify if the universe borders should be bounded
+     * @param square the square parameter
+     * @param rule   the rule to use
+     * @param bound  specify if the universe borders should be bounded
      */
     public GameOfLife(int square, Rule rule, boolean bound) {
 
@@ -72,12 +67,9 @@ public class GameOfLife {
     /**
      * Create a new GameOfLife with a rectangular universe and the specified rule.
      *
-     * @param width
-     *     the width of the rectangle
-     * @param height
-     *     the height of the rectangle
-     * @param rule
-     *     the rule to use
+     * @param width  the width of the rectangle
+     * @param height the height of the rectangle
+     * @param rule   the rule to use
      */
     public GameOfLife(int width, int height, Rule rule) {
 
@@ -87,14 +79,10 @@ public class GameOfLife {
     /**
      * Create a new GameOfLife with a rectangular universe and the specified rule.
      *
-     * @param width
-     *     the width of the rectangle
-     * @param height
-     *     the height of the rectangle
-     * @param rule
-     *     the rule to use
-     * @param bound
-     *     specify if the universe borders should be bound
+     * @param width  the width of the rectangle
+     * @param height the height of the rectangle
+     * @param rule   the rule to use
+     * @param bound  specify if the universe borders should be bound
      */
     public GameOfLife(int width, int height, Rule rule, boolean bound) {
 
@@ -104,14 +92,10 @@ public class GameOfLife {
     /**
      * Create a new Game of Life from a base board. The universe borders are not bounded.
      *
-     * @param boardData
-     *     the initial data to use
-     * @param width
-     *     the width of the universe
-     * @param height
-     *     the height of the universe
-     * @param rule
-     *     the rule to use
+     * @param boardData the initial data to use
+     * @param width     the width of the universe
+     * @param height    the height of the universe
+     * @param rule      the rule to use
      */
     public GameOfLife(byte[] boardData, int width, int height, Rule rule) {
 
@@ -121,16 +105,11 @@ public class GameOfLife {
     /**
      * Create a new Game of Life from a base board.
      *
-     * @param boardData
-     *     the initial data to use
-     * @param width
-     *     the width of the universe
-     * @param height
-     *     the height of the universe
-     * @param rule
-     *     the rule to use
-     * @param bound
-     *     specify if the universe borders should be bound
+     * @param boardData the initial data to use
+     * @param width     the width of the universe
+     * @param height    the height of the universe
+     * @param rule      the rule to use
+     * @param bound     specify if the universe borders should be bound
      */
     public GameOfLife(byte[] boardData, int width, int height, Rule rule, boolean bound) {
 
@@ -142,8 +121,7 @@ public class GameOfLife {
     /**
      * Create a new Game of Life from a parsed GLD file.
      *
-     * @param gld
-     *     the parsed GLD file
+     * @param gld the parsed GLD file
      */
     public GameOfLife(Goldata gld) {
 
@@ -180,8 +158,7 @@ public class GameOfLife {
     /**
      * Evolve for {@code n} generations.
      *
-     * @param n
-     *     the number of generation to evolve
+     * @param n the number of generation to evolve
      */
     public void nextGen(int n) {
 
@@ -192,11 +169,8 @@ public class GameOfLife {
     /**
      * Record the current generation.
      *
-     * @param oal
-     *     the list of OutputAdapter to use.
-     *
-     * @throws IOException
-     *     if an OutputAdapter throws one.
+     * @param oal the list of OutputAdapter to use.
+     * @throws IOException if an OutputAdapter throws one.
      */
     public void record(List<OutputAdapter> oal) throws IOException {
 
@@ -209,11 +183,8 @@ public class GameOfLife {
     /**
      * Record the current generation.
      *
-     * @param oa
-     *     the OutputAdapter to use
-     *
-     * @throws IOException
-     *     if the OutputAdapter throws one
+     * @param oa the OutputAdapter to use
+     * @throws IOException if the OutputAdapter throws one
      */
     public void record(OutputAdapter oa) throws IOException {
 
@@ -223,11 +194,8 @@ public class GameOfLife {
     /**
      * Record the next generation.
      *
-     * @param oal
-     *     the list of OutputAdapter to use.
-     *
-     * @throws IOException
-     *     if an OutputAdapter throws one.
+     * @param oal the list of OutputAdapter to use.
+     * @throws IOException if an OutputAdapter throws one.
      */
     public void recordNext(List<OutputAdapter> oal) throws IOException {
 
@@ -238,11 +206,8 @@ public class GameOfLife {
     /**
      * Record the next generation.
      *
-     * @param oa
-     *     the OutputAdapter to use
-     *
-     * @throws IOException
-     *     if the OutputAdapter throws one
+     * @param oa the OutputAdapter to use
+     * @throws IOException if the OutputAdapter throws one
      */
     public void recordNext(OutputAdapter oa) throws IOException {
 
@@ -253,13 +218,9 @@ public class GameOfLife {
     /**
      * Record {@code n} generation, plus the current one (or not).
      *
-     * @param oal
-     *     the list of OutputAdapter to use
-     * @param n
-     *     the number of generation to record
-     * @param doRecordCurrent
-     *     whether to record the current step
-     *
+     * @param oal             the list of OutputAdapter to use
+     * @param n               the number of generation to record
+     * @param doRecordCurrent whether to record the current step
      * @throws IOException if the OutputAdapter throws one
      */
     public void record(List<OutputAdapter> oal, int n, boolean doRecordCurrent) throws IOException {
@@ -273,13 +234,9 @@ public class GameOfLife {
     /**
      * Record {@code n} generation, plus the current one (or not).
      *
-     * @param oa
-     *     the OutputAdapter to use
-     * @param n
-     *     the number of generation to record
-     * @param doRecordCurrent
-     *     whether to record the current step
-     *
+     * @param oa              the OutputAdapter to use
+     * @param n               the number of generation to record
+     * @param doRecordCurrent whether to record the current step
      * @throws IOException if the OutputAdapter throws one
      */
     public void record(OutputAdapter oa, int n, boolean doRecordCurrent) throws IOException {
@@ -337,6 +294,7 @@ public class GameOfLife {
 
     /**
      * Set the creator for this Game of Life instance
+     *
      * @param creator the creator to put in records
      */
     public void setCreator(String creator) {
@@ -346,6 +304,7 @@ public class GameOfLife {
 
     /**
      * Set the comment for this Game of Life instance
+     *
      * @param comment the comment to put in records
      */
     public void setComment(String comment) {
@@ -404,12 +363,12 @@ public class GameOfLife {
 
             double speed = gen * 1000 / (double) elapsedTime;
             return String.format("Alive cells : %d. Compute time : %d ms. Ran %d steps on %d cells. Speed : %s gen/s. Performance : %s",
-                                 getAliveCells(),
-                                 elapsedTime,
-                                 gen,
-                                 cellCount(),
-                                 new DecimalFormat("#.##").format(speed),
-                                 new DecimalFormat("#.##").format(gen * cellCount() / Math.pow((double) elapsedTime, 2)));
+                getAliveCells(),
+                elapsedTime,
+                gen,
+                cellCount(),
+                new DecimalFormat("#.##").format(speed),
+                new DecimalFormat("#.##").format(gen * cellCount() / Math.pow((double) elapsedTime, 2)));
         }
     }
 }

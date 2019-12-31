@@ -10,13 +10,14 @@
 
 package com.limelion.glife.utils;
 
-import java.awt.*;
+import java.awt.Transparency;
 import java.awt.color.ColorSpace;
 import java.awt.image.*;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 /**
  * An utility class containing some utility methods.
@@ -25,6 +26,7 @@ public class Utils {
 
     /**
      * Cleanly create a File from a path. e.g. checks if it exists and/or if the parent directory exists.
+     *
      * @param path where to create the new file
      * @return the File just created
      * @throws IOException if the file manipulations failed
@@ -42,23 +44,24 @@ public class Utils {
     public static BufferedImage createGrayImage(byte[] buffer, int width, int height) {
 
         ColorModel cm = new ComponentColorModel(ColorSpace.getInstance(ColorSpace.CS_GRAY),
-                                                new int[] { 1 },
-                                                false,
-                                                true,
-                                                Transparency.OPAQUE,
-                                                DataBuffer.TYPE_BYTE);
+            new int[] { 1 },
+            false,
+            true,
+            Transparency.OPAQUE,
+            DataBuffer.TYPE_BYTE);
 
         return new BufferedImage(cm,
-                                 Raster.createWritableRaster(
-                                     cm.createCompatibleSampleModel(width, height),
-                                     new DataBufferByte(buffer, buffer.length),
-                                     null),
-                                 false,
-                                 null);
+            Raster.createWritableRaster(
+                cm.createCompatibleSampleModel(width, height),
+                new DataBufferByte(buffer, buffer.length),
+                null),
+            false,
+            null);
     }
 
     /**
      * Serialize an int to a new byte array
+     *
      * @param i the int to serialize
      * @return a new byte array containing the serialized int
      */
@@ -84,6 +87,7 @@ public class Utils {
 
     /**
      * Read all bytes from the given InputStream.
+     *
      * @param is the InputStream to read
      * @return an array containing all bytes.
      * @throws IOException if it failed reading the stream
@@ -100,7 +104,8 @@ public class Utils {
 
     /**
      * Creates a little player (html file). Useful for GIF or APNG files that can only be read in a browser.
-     * @param path the path where the player need to be created
+     *
+     * @param path          the path where the player need to be created
      * @param animationPath the relative path to the animation from the player
      * @throws IOException if there was an error creating the file
      */
@@ -113,29 +118,29 @@ public class Utils {
 
     /**
      * Fills the given array with the specified byte.
+     *
      * @param arr the array to fill
-     * @param b the byte to fill the array with
+     * @param b   the byte to fill the array with
      * @return the filled array (same ref)
      */
     public static byte[] fill(byte[] arr, byte b) {
-        for (int i = 0; i < arr.length; i++)
-            arr[i] = b;
+        Arrays.fill(arr, b);
         return arr;
     }
 
     public static int[] batoia(byte[] arr) {
         int[] out = new int[arr.length];
-        for (int i = 0; i < out.length; i++)
+        for (int i = 0; i < out.length; ++i)
             out[i] = arr[i];
         return out;
     }
 
     public static byte[] align(byte[][] arr) {
         int length = 0;
-        for (int i = 0; i < arr.length; i++)
+        for (int i = 0; i < arr.length; ++i)
             length += arr[i].length;
         byte[] out = new byte[length];
-        for (int i = 0; i < arr.length; i++)
+        for (int i = 0; i < arr.length; ++i)
             System.arraycopy(arr[i], 0, out, length -= arr[i].length, arr[i].length);
         return out;
     }

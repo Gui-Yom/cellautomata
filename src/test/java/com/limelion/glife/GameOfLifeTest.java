@@ -14,8 +14,8 @@ import com.limelion.glife.input.Input;
 import com.limelion.glife.output.*;
 import com.limelion.glife.utils.Utils;
 import com.vg.apng.APNG;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,8 +35,8 @@ public class GameOfLifeTest {
         gol.drawLine(250, 50, 250, 50);
 
         OutputParams op = new OutputParams(gol.getStateInfo().setCreator("Me").setComment("test"))
-            .setDelay(250, TimeUnit.MILLISECONDS)
-            .setRepeats(0);
+                              .setDelay(250, TimeUnit.MILLISECONDS)
+                              .setRepeats(0);
 
         try (OutputAdapter outBMP = new OutputBMP(op, Utils.cleanCreate("output/testOutput.bmp"))) {
             gol.record(outBMP);
@@ -74,7 +74,7 @@ public class GameOfLifeTest {
         byte[] gld1 = Files.readAllBytes(new File("output/testOutput.gld").toPath());
         byte[] gld2 = Files.readAllBytes(new File("output/testOutput2.gld").toPath());
 
-        Assert.assertArrayEquals(gld1, gld2);
+        Assertions.assertArrayEquals(gld1, gld2);
 
         System.out.println("Files are similar. OK");
 
