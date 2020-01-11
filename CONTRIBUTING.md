@@ -8,7 +8,7 @@ Feel free to open a issue and develop on it the more you can, the more we know t
 
 For bigger contributions, like adding a feature, it may be important to understand the project structure,
 how the whole thing works.
-Simple ! It's a maven project. Sources files are inside ```src/main/java```, the main package is ```com.limelion.glife```.
+Simple ! It's a maven project. Sources files are inside ```src/main/java```, the main package is ```com.limelion.cautomata```.
 
 #### General guidelines to contributes changes
  1. Fork this repository

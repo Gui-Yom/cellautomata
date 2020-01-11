@@ -19,8 +19,8 @@ dependencies {
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.5.2"
 }
 
-group "com.github.LimeiloN"
-version "1.3.0"
+group "com.github.Gui-Yom"
+version "2.0.0"
 
 sourceCompatibility = 11
 targetCompatibility = 11
@@ -35,25 +35,25 @@ publishing {
         mavenJava(MavenPublication) {
             from components.java
             pom {
-                name = "glife-lib"
+                name = "cellautomata"
                 description "Compute game of life rounds into images"
-                url = "https://github.com/LimeiloN/glife-lib"
+                url = "https://github.com/Gui-Yom/cellautomata"
                 licenses {
                     license {
                         name = "MIT License"
-                        url = "https://github.com/LimeiloN/glife-lib/blob/master/LICENSE"
+                        url = "https://github.com/Gui-Yom/cellautomata/blob/master/LICENSE"
                     }
                 }
                 developers {
                     developer {
-                        id = "LimeiloN"
+                        id = "Gui-Yom"
                         name = "Guillaume Anthouard"
                     }
                 }
                 scm {
-                    connection = "scm:git:git://github.com/LimeiloN/glife-lib.git"
-                    developerConnection = "scm:git:ssh://github.com/LimeiloN/glife-lib.git"
-                    url = "https://github.com/LimeiloN/glife-lib/"
+                    connection = "scm:git:git://github.com/Gui-Yom/cellautomata.git"
+                    developerConnection = "scm:git:ssh://github.com/Gui-Yom/cellautomata.git"
+                    url = "https://github.com/Gui-Yom/cellautomata/"
                 }
             }
         }
@@ -65,7 +65,7 @@ tasks.withType(JavaCompile) {
 }
 
 jigsaw {
-    module "com.limelion.glife"
+    module "guiyom.cellautomata"
     testLibraryModule "org.junit.jupiter.api"
     multiRelease = true
 }
