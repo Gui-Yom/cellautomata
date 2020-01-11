@@ -10,6 +10,7 @@
 
 package guiyom.cellautomata;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -17,7 +18,7 @@ import java.util.Set;
  * Represent a cellular automata rule.
  */
 @FunctionalInterface
-public interface Rule {
+public interface Rule extends Serializable {
 
     static Rule parse(String desc) {
         // Descriptor is like : <birth conditions>/<survive conditions>
